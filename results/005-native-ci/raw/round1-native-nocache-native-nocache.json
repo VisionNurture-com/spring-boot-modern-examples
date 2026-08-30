@@ -1,0 +1,19 @@
+{
+  "arm": "native-nocache",
+  "wall_sec": 199.447,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345632,
+  "total_build_sec": 188.008441323,
+  "peak_rss_bytes": 4329230336,
+  "system_total_bytes": 16766414848,
+  "gc_secs": 19.605,
+  "gc_count": 1958,
+  "cpu_load": 3.6393725639722083,
+  "reachable_types": 20120,
+  "reachable_methods": 91932,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}

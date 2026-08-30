@@ -1,0 +1,5 @@
+label=version-25.3
+setup_outcome=failure
+native_image_version=/home/runner/work/_temp/c604d3f8-3798-4224-9f2b-ebda34c8c067.sh: line 6: native-image: command not found
+unavailable
+java_home=/usr/lib/jvm/temurin-17-jdk-amd64

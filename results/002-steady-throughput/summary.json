@@ -1,0 +1,41 @@
+{
+  "scenario": "002-steady-throughput",
+  "mode": "M3",
+  "measures": "ウォームアップ後の定常状態のスループットと p99（ラウンドロビン・負荷 2 種）",
+  "env": {
+    "os": "Darwin 25.5.0",
+    "arch": "arm64",
+    "java": "openjdk version \"25.0.4\" 2026-07-21 LTS"
+  },
+  "values": {
+    "rounds": 3,
+    "warmup_sec": 8,
+    "duration_sec": 10,
+    "concurrency": 8,
+    "light_n": 2000,
+    "heavy_n": 1000000,
+    "methods": "jvm,aot,native",
+    "light_jvm_throughput_rps": 46064.6,
+    "light_jvm_p99_ms": 0.27,
+    "light_jvm_errors": 0,
+    "light_aot_throughput_rps": 46100.5,
+    "light_aot_p99_ms": 0.27,
+    "light_aot_errors": 0,
+    "light_native_throughput_rps": 43547.7,
+    "light_native_p99_ms": 0.55,
+    "light_native_errors": 0,
+    "heavy_jvm_throughput_rps": 4011.3,
+    "heavy_jvm_p99_ms": 2.16,
+    "heavy_jvm_errors": 0,
+    "heavy_aot_throughput_rps": 4012.9,
+    "heavy_aot_p99_ms": 2.16,
+    "heavy_aot_errors": 0,
+    "heavy_native_throughput_rps": 3896.1,
+    "heavy_native_p99_ms": 2.63,
+    "heavy_native_errors": 0,
+    "light_aot_vs_jvm_pct": 0.1,
+    "light_native_vs_jvm_pct": -5.5,
+    "heavy_aot_vs_jvm_pct": 0.0,
+    "heavy_native_vs_jvm_pct": -2.9
+  }
+}

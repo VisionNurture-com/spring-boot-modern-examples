@@ -1,0 +1,3 @@
+package_only_binary=no
+22218223	target/app.jar
+211418	target/app.jar.original

@@ -1,0 +1,17 @@
+# 006 の検算パス用。受け取ったスパンを標準出力へ書き出し、件数を数えられるようにする。
+# 計測本番では使わない（ログ出力そのものが負荷になるため collector-nop.yaml を使う）。
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]

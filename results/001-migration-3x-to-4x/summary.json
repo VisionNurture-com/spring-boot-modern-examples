@@ -1,0 +1,99 @@
+{
+  "scenario": "001-migration-3x-to-4x",
+  "mode": "M1",
+  "measures": "3.5.16 から 4.1.1 へ上げる過程で、直しては再ビルドする波ごとに ビルドを止める箇所（N1）と非推奨警告どまりの箇所（N2）が何件出るか。素直に上げる道と公式の classic starters を使う道を比べる",
+  "env": {
+    "os": "Darwin 25.6.0",
+    "arch": "arm64",
+    "java": "openjdk version \"25.0.4\" 2026-07-21 LTS",
+    "maven": "Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)"
+  },
+  "values": {
+    "before_version": "3.5.16",
+    "after_version": "4.1.1",
+    "source_files": 6,
+    "direct_dependencies": 3,
+    "base_w0_n1": 0,
+    "base_w0_n2": 1,
+    "base_w0_build_success": true,
+    "base_w0_tests_run": 2,
+    "naive_w1_n1": 4,
+    "naive_w1_n2": 0,
+    "naive_w1_build_success": false,
+    "naive_w1_tests_run": 0,
+    "naive_w2_n1": 4,
+    "naive_w2_n2": 0,
+    "naive_w2_build_success": false,
+    "naive_w2_tests_run": 0,
+    "naive_w3_n1": 0,
+    "naive_w3_n2": 0,
+    "naive_w3_build_success": true,
+    "naive_w3_tests_run": 2,
+    "classic_w1_n1": 4,
+    "classic_w1_n2": 0,
+    "classic_w1_build_success": false,
+    "classic_w1_tests_run": 0,
+    "classic_w2_n1": 4,
+    "classic_w2_n2": 0,
+    "classic_w2_build_success": false,
+    "classic_w2_tests_run": 0,
+    "classic_w3_n1": 0,
+    "classic_w3_n2": 0,
+    "classic_w3_build_success": true,
+    "classic_w3_tests_run": 2,
+    "naive_green_at": "w3",
+    "classic_green_at": "w3"
+  },
+  "detail": {
+    "base-w0": {
+      "n1_locations": [],
+      "n2_locations": [
+        "TaskControllerTest.java:31"
+      ]
+    },
+    "naive-w1": {
+      "n1_locations": [
+        "TaskController.java:22",
+        "TaskController.java:35",
+        "TaskController.java:8",
+        "TaskController.java:9"
+      ],
+      "n2_locations": []
+    },
+    "naive-w2": {
+      "n1_locations": [
+        "TaskControllerTest.java:25",
+        "TaskControllerTest.java:31",
+        "TaskControllerTest.java:7",
+        "TaskControllerTest.java:8"
+      ],
+      "n2_locations": []
+    },
+    "naive-w3": {
+      "n1_locations": [],
+      "n2_locations": []
+    },
+    "classic-w1": {
+      "n1_locations": [
+        "TaskController.java:22",
+        "TaskController.java:35",
+        "TaskController.java:8",
+        "TaskController.java:9"
+      ],
+      "n2_locations": []
+    },
+    "classic-w2": {
+      "n1_locations": [
+        "TaskControllerTest.java:25",
+        "TaskControllerTest.java:31",
+        "TaskControllerTest.java:7",
+        "TaskControllerTest.java:8"
+      ],
+      "n2_locations": []
+    },
+    "classic-w3": {
+      "n1_locations": [],
+      "n2_locations": []
+    }
+  }
+}

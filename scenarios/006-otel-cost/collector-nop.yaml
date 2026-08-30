@@ -1,0 +1,16 @@
+# 006 の計測本番用。受け取って捨てる。
+# バックエンドの性能を測らないための構成である。記事が測るのはアプリ側のコストだけ。
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  nop:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [nop]

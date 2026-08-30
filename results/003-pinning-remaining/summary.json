@@ -1,0 +1,34 @@
+{
+  "scenario": "003-pinning-remaining",
+  "mode": "M1",
+  "measures": "仮想スレッドがキャリアスレッドを手放せなくなる経路の件数と理由（閾値 2 段 × JDK 2 版 × 5 セット中央値）",
+  "env": {
+    "os": "Darwin 25.6.0",
+    "arch": "arm64",
+    "java25": "openjdk version 25.0.4 2026-07-21 LTS",
+    "java21": "openjdk version 21.0.12.1 2026-08-18 LTS"
+  },
+  "values": {
+    "threads": 8,
+    "block_ms": 100,
+    "sets": 5,
+    "default_threshold_ms": 20,
+    "j25_noop_default": 0,
+    "j25_sync_default": 0,
+    "j25_clinit_default": 8,
+    "j25_noop_zero": 5,
+    "j25_noop_zero_min": 0,
+    "j25_noop_zero_max": 11,
+    "j25_sync_zero": 14,
+    "j25_sync_zero_min": 5,
+    "j25_sync_zero_max": 15,
+    "j25_clinit_zero": 21,
+    "j25_clinit_zero_min": 12,
+    "j25_clinit_zero_max": 26,
+    "j21_noop_default": 0,
+    "j21_sync_default": 8,
+    "j21_clinit_default": 1,
+    "j25_clinit_reason_in_clinit": 1,
+    "j25_clinit_reason_waited": 7
+  }
+}

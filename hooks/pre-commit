@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# pre-commit — コミット identity が二層構成どおりかを commit の前に止める
+#
+# 背景:
+#   本リポジトリは 検証用（PRIVATE）と 公開用（PUBLIC）の二層で運用する。公開用は
+#   移管のたびに使い捨てクローンを作るため、リポジトリローカルの git config が無く、
+#   別の層の identity や個人のメールアドレスのまま commit されやすい。
+#
+#   検出の仕掛けは既にある（read-stuff の audit-public-identity.sh と
+#   .github/workflows/verify.yml の identity ジョブ）。しかし**どちらも push の後**に
+#   しか動かない。公開用は PUBLIC なので、push した時点でメールアドレスは誰でも読める。
+#   2026-08-26 に実際に起きた（CI の identity ジョブは failure を返していたが、
+#   赤い CI が 3 プッシュ連続で読まれていなかった）。
+#
+#   そのため commit の時点で止める層をここに置く。
+#
+# 🔴 期待値はこのファイルに書かない。
+#   本ファイルは公開用リポジトリにも同じ内容で置くため、アドレスを直書きすると
+#   それ自体が内部情報の持ち出しになる（2026-08-26、中立化ゲートが検出）。
+#   期待値はリポジトリローカルの git config から読む。
+#
+# 有効化（クローン後 1 回）:
+#   git config core.hooksPath hooks
+#   git config hooks.expected-name  "<この層の名前>"
+#   git config hooks.expected-email "<この層のアドレス>"
+#
+#   公開用のクローンは read-stuff の
+#   blog-tech-biz-plus/system/tools/public-repo-clone.sh が 3 つとも自動で設定する。
+
+set -uo pipefail
+
+want_name="$(git config hooks.expected-name  || true)"
+want_mail="$(git config hooks.expected-email || true)"
+
+if [ -z "$want_name" ] || [ -z "$want_mail" ]; then
+  echo "❌ コミットを中止しました（期待 identity が設定されていません）" >&2
+  echo "   この作業コピーには hooks.expected-name / hooks.expected-email がありません。" >&2
+  echo "" >&2
+  echo "     git config hooks.expected-name  \"<この層の名前>\"" >&2
+  echo "     git config hooks.expected-email \"<この層のアドレス>\"" >&2
+  echo "" >&2
+  echo "   公開用のクローンは public-repo-clone.sh が自動で設定します。" >&2
+  echo "   値は二層構成の運用ノート（検証用リポジトリ側）を参照してください。" >&2
+  exit 1
+fi
+
+have_name="$(git config user.name  || true)"
+have_mail="$(git config user.email || true)"
+
+if [ "$have_name" = "$want_name" ] && [ "$have_mail" = "$want_mail" ]; then
+  exit 0
+fi
+
+echo "❌ コミットを中止しました（identity が期待と違います）" >&2
+echo "   いまの設定: ${have_name:-（未設定）} <${have_mail:-（未設定）}>" >&2
+echo "   期待:       $want_name <$want_mail>" >&2
+echo "" >&2
+echo "   是正:" >&2
+echo "     git config user.name  \"$want_name\"" >&2
+echo "     git config user.email \"$want_mail\"" >&2
+echo "" >&2
+echo "   🔴 公開用は PUBLIC です。push すると author / committer のメールアドレスは" >&2
+echo "      認証なしの API と commits タブから誰でも読めます。" >&2
+exit 1

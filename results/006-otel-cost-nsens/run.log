@@ -1,0 +1,16 @@
+--- 計測: app（軽い仕事・20000 反復）---
+--- 計測: app（軽い仕事・20000 反復）---
+腕を絞りました（--arms A0,A3,A5）: 3 本
+--- 計測: app（軽い仕事・20000 反復）---
+腕を絞りました（--arms A0,A3,A5）: 3 本
+round 1 A0_plain: 37628.0 rps / p99 0.37 ms / cpu 67.19 s / rss 648848 KB
+round 1 A3_default: 37452.3 rps / p99 0.37 ms / cpu 70.06 s / rss 652160 KB
+round 1 A5_p100: 36678.1 rps / p99 0.39 ms / cpu 72.0 s / rss 641216 KB
+round 2 A0_plain: 37802.6 rps / p99 0.37 ms / cpu 67.06 s / rss 623280 KB
+round 2 A3_default: 37325.4 rps / p99 0.38 ms / cpu 70.37 s / rss 647472 KB
+round 2 A5_p100: 36667.9 rps / p99 0.39 ms / cpu 71.51 s / rss 647024 KB
+round 3 A0_plain: 37795.0 rps / p99 0.37 ms / cpu 66.83 s / rss 626480 KB
+round 3 A3_default: 37388.8 rps / p99 0.37 ms / cpu 69.98 s / rss 655328 KB
+round 3 A5_p100: 36577.7 rps / p99 0.39 ms / cpu 71.85 s / rss 670384 KB
+
+=== 完了（フェーズ: app）===

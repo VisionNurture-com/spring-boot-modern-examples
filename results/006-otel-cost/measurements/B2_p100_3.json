@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:18120/dbcpu?n=20000",
+  "concurrency": 8,
+  "warmup_sec": 8,
+  "duration_sec": 10,
+  "requests": 7599,
+  "errors": 0,
+  "throughput_rps": 759.9,
+  "p50_ms": 10.2,
+  "p95_ms": 11.96,
+  "p99_ms": 13.68,
+  "max_ms": 24.92,
+  "cpu_sec": 9.41,
+  "rss_max_kb": 309392
+}

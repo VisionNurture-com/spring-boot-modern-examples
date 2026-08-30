@@ -1,0 +1,50 @@
+=== シナリオ: 002-steady-throughput / モード: M3 ===
+実行日時: 2026-08-27T11:54:58Z
+方式: jvm,aot,native / ラウンド: 3 / ウォームアップ: 8s / 計測: 10s / 同時実行: 8
+負荷: 軽 n=2000（HTTP 往復が支配的）/ 重 n=1000000（アプリの計算が支配的）
+
+--- 環境 ---
+os: Darwin 25.5.0
+arch: arm64
+cpu: 14 コア
+java: openjdk version "25.0.4" 2026-07-21 LTS
+
+--- 成果物をすべて先に揃える ---
+jar: 21983846 bytes
+展開先: /var/folders/9b/bg3sc7qd53n9gqqvqmxhrwhr0000gn/T/tmp.rkQntZc4mg/application 中身: app.jar lib 
+aot cache: 57999360 bytes / 警告 111 件
+native: 91016208 bytes
+
+--- 計測（ラウンドロビン）---
+round 1 jvm light(n=2000): 46051.5 rps / p99 0.27 ms
+round 1 jvm heavy(n=1000000): 4011.3 rps / p99 2.16 ms
+round 1 aot light(n=2000): 46100.5 rps / p99 0.27 ms
+round 1 aot heavy(n=1000000): 4012.9 rps / p99 2.16 ms
+round 1 native light(n=2000): 43547.7 rps / p99 0.55 ms
+round 1 native heavy(n=1000000): 3892.2 rps / p99 2.61 ms
+round 2 jvm light(n=2000): 46064.6 rps / p99 0.27 ms
+round 2 jvm heavy(n=1000000): 4017.7 rps / p99 2.16 ms
+round 2 aot light(n=2000): 46432.2 rps / p99 0.26 ms
+round 2 aot heavy(n=1000000): 4011.5 rps / p99 2.17 ms
+round 2 native light(n=2000): 43537.9 rps / p99 0.55 ms
+round 2 native heavy(n=1000000): 3896.1 rps / p99 2.63 ms
+round 3 jvm light(n=2000): 46110.5 rps / p99 0.27 ms
+round 3 jvm heavy(n=1000000): 3969.1 rps / p99 2.43 ms
+round 3 aot light(n=2000): 45960.0 rps / p99 0.27 ms
+round 3 aot heavy(n=1000000): 4013.0 rps / p99 2.15 ms
+round 3 native light(n=2000): 43734.8 rps / p99 0.54 ms
+round 3 native heavy(n=1000000): 3901.6 rps / p99 2.64 ms
+
+light jvm     throughput   46064.6 rps  p99   0.27 ms  errors 0
+light aot     throughput   46100.5 rps  p99   0.27 ms  errors 0
+light native  throughput   43547.7 rps  p99   0.55 ms  errors 0
+heavy jvm     throughput    4011.3 rps  p99   2.16 ms  errors 0
+heavy aot     throughput    4012.9 rps  p99   2.16 ms  errors 0
+heavy native  throughput    3896.1 rps  p99   2.63 ms  errors 0
+
+light aot     対 JVM: +0.1%
+light native  対 JVM: -5.5%
+heavy aot     対 JVM: +0.0%
+heavy native  対 JVM: -2.9%
+
+=== 完了 ===

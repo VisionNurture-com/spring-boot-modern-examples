@@ -1,0 +1,39 @@
+{
+  "scenario": "002-cache-pitfalls",
+  "mode": "M1",
+  "measures": "AOT キャッシュが効かなくなる 2 経路（jar の食い違い / clean を挟まない汚染）の出力と時間",
+  "env": {
+    "os": "Darwin 25.5.0",
+    "arch": "arm64",
+    "java": "openjdk version \"25.0.4\" 2026-07-21 LTS"
+  },
+  "values": {
+    "sets": 5,
+    "arms": "none,stale,match",
+    "jar_a_bytes": 21983846,
+    "jar_b_bytes": 21983850,
+    "stale_cache_bytes": 57950208,
+    "match_cache_bytes": 57982976,
+    "none_median_s": 0.783,
+    "none_min_s": 0.78,
+    "none_max_s": 0.789,
+    "stale_median_s": 0.842,
+    "stale_min_s": 0.833,
+    "stale_max_s": 0.845,
+    "match_median_s": 0.422,
+    "match_min_s": 0.407,
+    "match_max_s": 0.424,
+    "stale_vs_none_pct": 7.5,
+    "match_vs_none_pct": -46.1,
+    "stale_default_warning_lines": 1,
+    "stale_default_error_lines": 3,
+    "stale_exit_code": 0,
+    "skip_extract_default_aot_lines": 0,
+    "opened_msg_default_lines": 0,
+    "opened_msg_xlog_lines": 1,
+    "jar_clean_bytes": 21983846,
+    "jar_dirty_bytes": 22217685,
+    "jar_dirty_delta_bytes": 233839,
+    "aot_generated_classes": 91
+  }
+}

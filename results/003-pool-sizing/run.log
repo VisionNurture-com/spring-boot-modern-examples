@@ -1,0 +1,1063 @@
+==========================================
+003-pool-sizing
+==========================================
+日時: 2026-08-28 17:43:26 +0900
+OS: Darwin 25.6.0
+アーキテクチャ: arm64
+Java: openjdk version "25.0.4" 2026-07-21 LTS
+Docker: Docker version 29.7.2, build a7dcaa6
+PostgreSQL イメージ: postgres:18.6
+同時実行数: 64 / 待つ問い合わせ: 50ms / CPU を使う問い合わせ: n=100000
+機体の論理コア数: 14
+プールサイズ: 2 4 8 16 32 64
+ラウンド数: 3 / ウォームアップ: 5s / 計測: 6s
+
+▶ ビルド
+   22593237 バイト
+▶ PostgreSQL を起動
+af581f4f5c774d47b8f422df88b4f04bcc4e889ea57fe7008077c0d72c379237
+   PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2)
+
+▶ ラウンド 1 / 負荷=wait
+[0.154s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.154s][info][jfr,startup] 
+[0.154s][info][jfr,startup] Use jcmd 50781 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 221,
+  "errors": 0,
+  "throughput_rps": 36.8,
+  "p50_ms": 1740.38,
+  "p95_ms": 1754.99,
+  "p99_ms": 1760.06,
+  "max_ms": 1760.53
+}
+--- workload=wait pool=2 round=1 の JFR 内訳 ---
+   pool=2 → 36.8 req/s / p50 1740.38ms / p99 1760.06ms / pinned 0 件
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 50951 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 439,
+  "errors": 0,
+  "throughput_rps": 73.1,
+  "p50_ms": 877.36,
+  "p95_ms": 900.81,
+  "p99_ms": 906.66,
+  "max_ms": 1683.13
+}
+--- workload=wait pool=4 round=1 の JFR 内訳 ---
+   pool=4 → 73.1 req/s / p50 877.36ms / p99 906.66ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 51141 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 870,
+  "errors": 0,
+  "throughput_rps": 144.8,
+  "p50_ms": 440.69,
+  "p95_ms": 457.04,
+  "p99_ms": 814.41,
+  "max_ms": 834.58
+}
+--- workload=wait pool=8 round=1 の JFR 内訳 ---
+   pool=8 → 144.8 req/s / p50 440.69ms / p99 814.41ms / pinned 0 件
+[0.142s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.142s][info][jfr,startup] 
+[0.142s][info][jfr,startup] Use jcmd 51291 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1763,
+  "errors": 0,
+  "throughput_rps": 293.6,
+  "p50_ms": 217.36,
+  "p95_ms": 229.93,
+  "p99_ms": 376.10,
+  "max_ms": 388.25
+}
+--- workload=wait pool=16 round=1 の JFR 内訳 ---
+   pool=16 → 293.6 req/s / p50 217.36ms / p99 376.1ms / pinned 0 件
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 51461 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 3456,
+  "errors": 0,
+  "throughput_rps": 575.4,
+  "p50_ms": 111.07,
+  "p95_ms": 124.06,
+  "p99_ms": 171.89,
+  "max_ms": 233.33
+}
+--- workload=wait pool=32 round=1 の JFR 内訳 ---
+   pool=32 → 575.4 req/s / p50 111.07ms / p99 171.89ms / pinned 0 件
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 51630 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 6852,
+  "errors": 0,
+  "throughput_rps": 1141.8,
+  "p50_ms": 55.44,
+  "p95_ms": 63.07,
+  "p99_ms": 67.35,
+  "max_ms": 73.96
+}
+--- workload=wait pool=64 round=1 の JFR 内訳 ---
+   pool=64 → 1141.8 req/s / p50 55.44ms / p99 67.35ms / pinned 0 件
+▶ ラウンド 1 / 負荷=cpu
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 51801 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 258,
+  "errors": 0,
+  "throughput_rps": 43.0,
+  "p50_ms": 1480.32,
+  "p95_ms": 1509.19,
+  "p99_ms": 1511.76,
+  "max_ms": 1512.65
+}
+--- workload=cpu pool=2 round=1 の JFR 内訳 ---
+   pool=2 → 43.0 req/s / p50 1480.32ms / p99 1511.76ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 51973 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 501,
+  "errors": 0,
+  "throughput_rps": 83.5,
+  "p50_ms": 766.34,
+  "p95_ms": 785.76,
+  "p99_ms": 793.23,
+  "max_ms": 1478.89
+}
+--- workload=cpu pool=4 round=1 の JFR 内訳 ---
+   pool=4 → 83.5 req/s / p50 766.34ms / p99 793.23ms / pinned 0 件
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 52143 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 988,
+  "errors": 0,
+  "throughput_rps": 164.4,
+  "p50_ms": 390.29,
+  "p95_ms": 399.14,
+  "p99_ms": 722.17,
+  "max_ms": 739.38
+}
+--- workload=cpu pool=8 round=1 の JFR 内訳 ---
+   pool=8 → 164.4 req/s / p50 390.29ms / p99 722.17ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 52314 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1353,
+  "errors": 0,
+  "throughput_rps": 225.1,
+  "p50_ms": 281.03,
+  "p95_ms": 327.48,
+  "p99_ms": 461.33,
+  "max_ms": 523.12
+}
+--- workload=cpu pool=16 round=1 の JFR 内訳 ---
+   pool=16 → 225.1 req/s / p50 281.03ms / p99 461.33ms / pinned 0 件
+[0.145s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.145s][info][jfr,startup] 
+[0.145s][info][jfr,startup] Use jcmd 52484 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1313,
+  "errors": 0,
+  "throughput_rps": 218.7,
+  "p50_ms": 285.78,
+  "p95_ms": 371.96,
+  "p99_ms": 441.65,
+  "max_ms": 508.10
+}
+--- workload=cpu pool=32 round=1 の JFR 内訳 ---
+   pool=32 → 218.7 req/s / p50 285.78ms / p99 441.65ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 52656 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1326,
+  "errors": 0,
+  "throughput_rps": 220.8,
+  "p50_ms": 305.37,
+  "p95_ms": 452.88,
+  "p99_ms": 518.38,
+  "max_ms": 620.03
+}
+--- workload=cpu pool=64 round=1 の JFR 内訳 ---
+   pool=64 → 220.8 req/s / p50 305.37ms / p99 518.38ms / pinned 0 件
+▶ ラウンド 2 / 負荷=wait
+[0.138s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.138s][info][jfr,startup] 
+[0.138s][info][jfr,startup] Use jcmd 52829 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 219,
+  "errors": 0,
+  "throughput_rps": 36.4,
+  "p50_ms": 1762.37,
+  "p95_ms": 1783.13,
+  "p99_ms": 1785.80,
+  "max_ms": 1787.20
+}
+--- workload=wait pool=2 round=2 の JFR 内訳 ---
+   pool=2 → 36.4 req/s / p50 1762.37ms / p99 1785.8ms / pinned 0 件
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 53026 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 440,
+  "errors": 0,
+  "throughput_rps": 73.3,
+  "p50_ms": 874.41,
+  "p95_ms": 891.63,
+  "p99_ms": 899.32,
+  "max_ms": 901.93
+}
+--- workload=wait pool=4 round=2 の JFR 内訳 ---
+   pool=4 → 73.3 req/s / p50 874.41ms / p99 899.32ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 53206 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 862,
+  "errors": 0,
+  "throughput_rps": 143.6,
+  "p50_ms": 444.29,
+  "p95_ms": 458.56,
+  "p99_ms": 819.68,
+  "max_ms": 845.91
+}
+--- workload=wait pool=8 round=2 の JFR 内訳 ---
+   pool=8 → 143.6 req/s / p50 444.29ms / p99 819.68ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 53382 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1731,
+  "errors": 0,
+  "throughput_rps": 288.4,
+  "p50_ms": 221.44,
+  "p95_ms": 236.91,
+  "p99_ms": 379.75,
+  "max_ms": 403.05
+}
+--- workload=wait pool=16 round=2 の JFR 内訳 ---
+   pool=16 → 288.4 req/s / p50 221.44ms / p99 379.75ms / pinned 0 件
+[0.143s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.143s][info][jfr,startup] 
+[0.143s][info][jfr,startup] Use jcmd 53534 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 3460,
+  "errors": 0,
+  "throughput_rps": 575.7,
+  "p50_ms": 109.99,
+  "p95_ms": 123.49,
+  "p99_ms": 169.32,
+  "max_ms": 229.73
+}
+--- workload=wait pool=32 round=2 の JFR 内訳 ---
+   pool=32 → 575.7 req/s / p50 109.99ms / p99 169.32ms / pinned 0 件
+[0.138s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.138s][info][jfr,startup] 
+[0.138s][info][jfr,startup] Use jcmd 53705 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 6727,
+  "errors": 0,
+  "throughput_rps": 1121.0,
+  "p50_ms": 56.28,
+  "p95_ms": 64.53,
+  "p99_ms": 68.74,
+  "max_ms": 76.66
+}
+--- workload=wait pool=64 round=2 の JFR 内訳 ---
+   pool=64 → 1121.0 req/s / p50 56.28ms / p99 68.74ms / pinned 0 件
+▶ ラウンド 2 / 負荷=cpu
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 53875 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 260,
+  "errors": 0,
+  "throughput_rps": 43.3,
+  "p50_ms": 1474.98,
+  "p95_ms": 1494.39,
+  "p99_ms": 2912.98,
+  "max_ms": 2915.56
+}
+--- workload=cpu pool=2 round=2 の JFR 内訳 ---
+   pool=2 → 43.3 req/s / p50 1474.98ms / p99 2912.98ms / pinned 0 件
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 54067 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 500,
+  "errors": 0,
+  "throughput_rps": 83.3,
+  "p50_ms": 770.24,
+  "p95_ms": 780.12,
+  "p99_ms": 782.54,
+  "max_ms": 1497.58
+}
+--- workload=cpu pool=4 round=2 の JFR 内訳 ---
+   pool=4 → 83.3 req/s / p50 770.24ms / p99 782.54ms / pinned 0 件
+[0.137s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.137s][info][jfr,startup] 
+[0.137s][info][jfr,startup] Use jcmd 54238 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 995,
+  "errors": 0,
+  "throughput_rps": 165.6,
+  "p50_ms": 387.11,
+  "p95_ms": 395.00,
+  "p99_ms": 399.17,
+  "max_ms": 726.78
+}
+--- workload=cpu pool=8 round=2 の JFR 内訳 ---
+   pool=8 → 165.6 req/s / p50 387.11ms / p99 399.17ms / pinned 0 件
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 54410 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1328,
+  "errors": 0,
+  "throughput_rps": 221.0,
+  "p50_ms": 287.22,
+  "p95_ms": 329.99,
+  "p99_ms": 356.08,
+  "max_ms": 542.62
+}
+--- workload=cpu pool=16 round=2 の JFR 内訳 ---
+   pool=16 → 221.0 req/s / p50 287.22ms / p99 356.08ms / pinned 0 件
+[0.142s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.142s][info][jfr,startup] 
+[0.142s][info][jfr,startup] Use jcmd 54559 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1290,
+  "errors": 0,
+  "throughput_rps": 214.8,
+  "p50_ms": 291.03,
+  "p95_ms": 368.59,
+  "p99_ms": 404.11,
+  "max_ms": 467.28
+}
+--- workload=cpu pool=32 round=2 の JFR 内訳 ---
+   pool=32 → 214.8 req/s / p50 291.03ms / p99 404.11ms / pinned 0 件
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 54729 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1299,
+  "errors": 0,
+  "throughput_rps": 216.4,
+  "p50_ms": 305.93,
+  "p95_ms": 461.48,
+  "p99_ms": 510.51,
+  "max_ms": 656.84
+}
+--- workload=cpu pool=64 round=2 の JFR 内訳 ---
+   pool=64 → 216.4 req/s / p50 305.93ms / p99 510.51ms / pinned 0 件
+▶ ラウンド 3 / 負荷=wait
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 54903 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 218,
+  "errors": 0,
+  "throughput_rps": 36.3,
+  "p50_ms": 1757.20,
+  "p95_ms": 1780.69,
+  "p99_ms": 1786.44,
+  "max_ms": 1788.77
+}
+--- workload=wait pool=2 round=3 の JFR 内訳 ---
+   pool=2 → 36.3 req/s / p50 1757.2ms / p99 1786.44ms / pinned 0 件
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 55092 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 436,
+  "errors": 0,
+  "throughput_rps": 72.6,
+  "p50_ms": 882.97,
+  "p95_ms": 899.92,
+  "p99_ms": 909.41,
+  "max_ms": 1718.82
+}
+--- workload=wait pool=4 round=3 の JFR 内訳 ---
+   pool=4 → 72.6 req/s / p50 882.97ms / p99 909.41ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 55261 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 869,
+  "errors": 0,
+  "throughput_rps": 144.7,
+  "p50_ms": 442.86,
+  "p95_ms": 457.37,
+  "p99_ms": 826.44,
+  "max_ms": 835.32
+}
+--- workload=wait pool=8 round=3 の JFR 内訳 ---
+   pool=8 → 144.7 req/s / p50 442.86ms / p99 826.44ms / pinned 0 件
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 55430 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1752,
+  "errors": 0,
+  "throughput_rps": 291.7,
+  "p50_ms": 218.97,
+  "p95_ms": 231.43,
+  "p99_ms": 376.81,
+  "max_ms": 403.06
+}
+--- workload=wait pool=16 round=3 の JFR 内訳 ---
+   pool=16 → 291.7 req/s / p50 218.97ms / p99 376.81ms / pinned 0 件
+[0.138s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.138s][info][jfr,startup] 
+[0.138s][info][jfr,startup] Use jcmd 55603 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 3462,
+  "errors": 0,
+  "throughput_rps": 576.9,
+  "p50_ms": 110.86,
+  "p95_ms": 124.28,
+  "p99_ms": 170.38,
+  "max_ms": 228.85
+}
+--- workload=wait pool=32 round=3 の JFR 内訳 ---
+   pool=32 → 576.9 req/s / p50 110.86ms / p99 170.38ms / pinned 0 件
+[0.143s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.143s][info][jfr,startup] 
+[0.143s][info][jfr,startup] Use jcmd 55753 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/db?ms=50",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 6725,
+  "errors": 0,
+  "throughput_rps": 1119.2,
+  "p50_ms": 56.98,
+  "p95_ms": 63.44,
+  "p99_ms": 67.67,
+  "max_ms": 77.69
+}
+--- workload=wait pool=64 round=3 の JFR 内訳 ---
+   pool=64 → 1119.2 req/s / p50 56.98ms / p99 67.67ms / pinned 0 件
+▶ ラウンド 3 / 負荷=cpu
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 55923 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 260,
+  "errors": 0,
+  "throughput_rps": 43.3,
+  "p50_ms": 1477.20,
+  "p95_ms": 1483.83,
+  "p99_ms": 2899.02,
+  "max_ms": 2910.95
+}
+--- workload=cpu pool=2 round=3 の JFR 内訳 ---
+   pool=2 → 43.3 req/s / p50 1477.2ms / p99 2899.02ms / pinned 0 件
+[0.142s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.142s][info][jfr,startup] 
+[0.142s][info][jfr,startup] Use jcmd 56113 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 504,
+  "errors": 0,
+  "throughput_rps": 83.9,
+  "p50_ms": 763.83,
+  "p95_ms": 774.58,
+  "p99_ms": 1469.15,
+  "max_ms": 1484.19
+}
+--- workload=cpu pool=4 round=3 の JFR 内訳 ---
+   pool=4 → 83.9 req/s / p50 763.83ms / p99 1469.15ms / pinned 0 件
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 56284 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 990,
+  "errors": 0,
+  "throughput_rps": 165.0,
+  "p50_ms": 387.24,
+  "p95_ms": 397.22,
+  "p99_ms": 717.67,
+  "max_ms": 733.65
+}
+--- workload=cpu pool=8 round=3 の JFR 内訳 ---
+   pool=8 → 165.0 req/s / p50 387.24ms / p99 717.67ms / pinned 0 件
+[0.139s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.139s][info][jfr,startup] 
+[0.139s][info][jfr,startup] Use jcmd 56453 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1305,
+  "errors": 0,
+  "throughput_rps": 217.5,
+  "p50_ms": 290.70,
+  "p95_ms": 338.15,
+  "p99_ms": 491.54,
+  "max_ms": 545.71
+}
+--- workload=cpu pool=16 round=3 の JFR 内訳 ---
+   pool=16 → 217.5 req/s / p50 290.7ms / p99 491.54ms / pinned 0 件
+[0.143s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.143s][info][jfr,startup] 
+[0.143s][info][jfr,startup] Use jcmd 56622 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1291,
+  "errors": 0,
+  "throughput_rps": 215.1,
+  "p50_ms": 287.88,
+  "p95_ms": 375.08,
+  "p99_ms": 427.14,
+  "max_ms": 503.74
+}
+--- workload=cpu pool=32 round=3 の JFR 内訳 ---
+   pool=32 → 215.1 req/s / p50 287.88ms / p99 427.14ms / pinned 0 件
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 56771 JFR.dump name=1 to copy recording data to file.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+{
+  "url": "http://localhost:8080/dbcpu?n=100000",
+  "concurrency": 64,
+  "warmup_sec": 5,
+  "duration_sec": 6,
+  "requests": 1313,
+  "errors": 0,
+  "throughput_rps": 218.6,
+  "p50_ms": 306.53,
+  "p95_ms": 461.19,
+  "p99_ms": 608.22,
+  "max_ms": 783.43
+}
+--- workload=cpu pool=64 round=3 の JFR 内訳 ---
+   pool=64 → 218.6 req/s / p50 306.53ms / p99 608.22ms / pinned 0 件
+
+==========================================
+結果（3 ラウンドの中央値）
+==========================================
+
+[待つ問い合わせ（pg_sleep）]
+ pool     req/s    p50 ms    p99 ms  pinned
+    2      36.4    1757.2    1785.8       0
+    4      73.1     877.4     906.7       0
+    8     144.7     442.9     819.7       0
+   16     291.7     219.0     376.8       0
+   32     575.7     110.9     170.4       0
+   64    1121.0      56.3      67.7       0
+
+[CPU を使う問い合わせ]
+ pool     req/s    p50 ms    p99 ms  pinned
+    2      43.3    1477.2    2899.0       0
+    4      83.5     766.3     793.2       0
+    8     165.0     387.2     717.7       0
+   16     221.0     287.2     461.3       0
+   32     215.1     287.9     427.1       0
+   64     218.6     305.9     518.4       0
+
+スループット最大のプールサイズ — 待つ問い合わせ: 64 / CPU を使う問い合わせ: 16
+HikariCP 公式の式（コア数 x 2 + 1）: 29
+pinning の合計: 0 件（既定閾値 20 ms）
+
+生ログ: /Users/user/work/repo/spring-boot-modern-examples/results/003-pool-sizing/run.log
+実効値: /Users/user/work/repo/spring-boot-modern-examples/results/003-pool-sizing/summary.json

@@ -1,0 +1,464 @@
+==========================================
+003-pinning-remaining
+==========================================
+日時: 2026-08-28 17:28:08 +0900
+OS: Darwin 25.6.0
+アーキテクチャ: arm64
+JDK 25: openjdk version "25.0.4" 2026-07-21 LTS
+JDK 21: openjdk version "21.0.12.1" 2026-08-18 LTS
+スレッド数: 8 / ブロック時間: 100ms / セット数: 5（中央値で比較）
+
+[0.136s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.136s][info][jfr,startup] 
+[0.136s][info][jfr,startup] Use jcmd 39577 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 39584 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.142s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.142s][info][jfr,startup] 
+[0.142s][info][jfr,startup] Use jcmd 39591 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.143s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.143s][info][jfr,startup] 
+[0.143s][info][jfr,startup] Use jcmd 39598 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 39625 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=noop / threshold=default — 中央値 0 件（最小 0 / 最大 0 / 全 0 0 0 0 0）
+--- j25_noop_default の内訳（最終セット） ---
+--- j25_noop_default の代表スタック（先頭 1 件） ---
+[0.150s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.150s][info][jfr,startup] 
+[0.150s][info][jfr,startup] Use jcmd 39655 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.151s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.151s][info][jfr,startup] 
+[0.151s][info][jfr,startup] Use jcmd 39662 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.149s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.149s][info][jfr,startup] 
+[0.149s][info][jfr,startup] Use jcmd 39669 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.148s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.148s][info][jfr,startup] 
+[0.148s][info][jfr,startup] Use jcmd 39696 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.146s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.146s][info][jfr,startup] 
+[0.146s][info][jfr,startup] Use jcmd 39703 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=noop / threshold=zero — 中央値 5 件（最小 0 / 最大 11 / 全 7 5 0 11 5）
+--- j25_noop_zero の内訳（最終セット） ---
+   3   pinnedReason = "Waited for initialization of java.util.concurrent.locks.AbstractQueuedSynchronizer$ExclusiveNode by another thread"
+   3   blockingOperation = "Object.wait"
+   2   pinnedReason = "Freeze or preempt failed (2)"
+   2   blockingOperation = "Contended monitor enter"
+   1   duration = 0.0389 ms
+   1   duration = 0.0333 ms
+   1   duration = 0.0230 ms
+   1   duration = 0.0121 ms
+   1   duration = 0.00542 ms
+--- j25_noop_zero の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:13.498 (2026-08-28)
+  duration = 0.00542 ms
+  blockingOperation = "Contended monitor enter"
+  pinnedReason = "Freeze or preempt failed (2)"
+  carrierThread = "ForkJoinPool-1-worker-2" (javaThreadId = 43)
+  eventThread = "" (javaThreadId = 42, virtual)
+  stackTrace = [
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.tryInitializeHead() line: 592
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer$Node, int, boolean, boolean, boolean, long) line: 765
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireSharedInterruptibly(int) line: 1139
+    java.util.concurrent.CountDownLatch.await() line: 230
+    PinDemo.lambda$main$0(CountDownLatch, CountDownLatch, String) line: 40
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+[0.142s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.142s][info][jfr,startup] 
+[0.142s][info][jfr,startup] Use jcmd 39733 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.146s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.146s][info][jfr,startup] 
+[0.146s][info][jfr,startup] Use jcmd 39760 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.152s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.152s][info][jfr,startup] 
+[0.152s][info][jfr,startup] Use jcmd 39768 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 39795 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.143s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.143s][info][jfr,startup] 
+[0.143s][info][jfr,startup] Use jcmd 39822 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=sync / threshold=default — 中央値 0 件（最小 0 / 最大 0 / 全 0 0 0 0 0）
+--- j25_sync_default の内訳（最終セット） ---
+--- j25_sync_default の代表スタック（先頭 1 件） ---
+[0.150s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.150s][info][jfr,startup] 
+[0.150s][info][jfr,startup] Use jcmd 39872 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.148s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.148s][info][jfr,startup] 
+[0.148s][info][jfr,startup] Use jcmd 39879 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.151s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.151s][info][jfr,startup] 
+[0.151s][info][jfr,startup] Use jcmd 39906 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.148s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.148s][info][jfr,startup] 
+[0.148s][info][jfr,startup] Use jcmd 39933 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.154s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.154s][info][jfr,startup] 
+[0.154s][info][jfr,startup] Use jcmd 39940 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=sync / threshold=zero — 中央値 14 件（最小 5 / 最大 15 / 全 12 14 15 14 5）
+--- j25_sync_zero の内訳（最終セット） ---
+   3   blockingOperation = "Object.wait"
+   2   pinnedReason = "Waited for initialization of java.util.concurrent.locks.AbstractQueuedSynchronizer$ExclusiveNode by another thread"
+   2   blockingOperation = "Contended monitor enter"
+   1   pinnedReason = "Waited for initialization of java.util.concurrent.locks.AbstractQueuedSynchronizer$SharedNode by another thread"
+   1   pinnedReason = "VM call to java.util.concurrent.locks.AbstractQueuedSynchronizer$Node.<clinit> on stack"
+   1   pinnedReason = "Freeze or preempt failed (2)"
+   1   duration = 0.0332 ms
+   1   duration = 0.0321 ms
+   1   duration = 0.0253 ms
+   1   duration = 0.0173 ms
+   1   duration = 0.000917 ms
+--- j25_sync_zero の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:26.306 (2026-08-28)
+  duration = 0.000917 ms
+  blockingOperation = "Contended monitor enter"
+  pinnedReason = "VM call to java.util.concurrent.locks.AbstractQueuedSynchronizer$Node.<clinit> on stack"
+  carrierThread = "ForkJoinPool-1-worker-1" (javaThreadId = 41)
+  eventThread = "" (javaThreadId = 40, virtual)
+  stackTrace = [
+    java.util.concurrent.locks.AbstractQueuedSynchronizer$Node.<clinit>() line: 499
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.tryInitializeHead() line: 592
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer$Node, int, boolean, boolean, boolean, long) line: 765
+    java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireSharedInterruptibly(int) line: 1139
+    java.util.concurrent.CountDownLatch.await() line: 230
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 39990 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.141s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.141s][info][jfr,startup] 
+[0.141s][info][jfr,startup] Use jcmd 39997 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.145s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.145s][info][jfr,startup] 
+[0.145s][info][jfr,startup] Use jcmd 40004 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.144s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.144s][info][jfr,startup] 
+[0.144s][info][jfr,startup] Use jcmd 40031 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.140s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.140s][info][jfr,startup] 
+[0.140s][info][jfr,startup] Use jcmd 40038 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=clinit / threshold=default — 中央値 8 件（最小 8 / 最大 8 / 全 8 8 8 8 8）
+--- j25_clinit_default の内訳（最終セット） ---
+   8   duration = 110 ms
+   7   pinnedReason = "Waited for initialization of PinDemo$SlowInit by another thread"
+   7   blockingOperation = "Object.wait"
+   1   pinnedReason = "VM call to PinDemo$SlowInit.<clinit> on stack"
+   1   blockingOperation = "LockSupport.park"
+--- j25_clinit_default の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:30.009 (2026-08-28)
+  duration = 110 ms
+  blockingOperation = "LockSupport.park"
+  pinnedReason = "VM call to PinDemo$SlowInit.<clinit> on stack"
+  carrierThread = "ForkJoinPool-1-worker-9" (javaThreadId = 56)
+  eventThread = "" (javaThreadId = 50, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 833
+    java.lang.VirtualThread.parkNanos(long) line: 801
+    java.lang.VirtualThread.sleepNanos(long) line: 983
+    java.lang.Thread.sleepNanos(long) line: 507
+    java.lang.Thread.sleep(long) line: 540
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 17:28:30.009 (2026-08-28)
+[0.146s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.146s][info][jfr,startup] 
+[0.146s][info][jfr,startup] Use jcmd 40069 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.145s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.145s][info][jfr,startup] 
+[0.145s][info][jfr,startup] Use jcmd 40096 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.151s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.151s][info][jfr,startup] 
+[0.151s][info][jfr,startup] Use jcmd 40103 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.148s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.148s][info][jfr,startup] 
+[0.148s][info][jfr,startup] Use jcmd 40110 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+[0.153s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.153s][info][jfr,startup] 
+[0.153s][info][jfr,startup] Use jcmd 40117 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=25.0.4
+done
+▶ JDK 25 / arm=clinit / threshold=zero — 中央値 21 件（最小 12 / 最大 26 / 全 21 26 16 24 12）
+--- j25_clinit_zero の内訳（最終セット） ---
+   8   duration = 110 ms
+   7   pinnedReason = "Waited for initialization of PinDemo$SlowInit by another thread"
+   7   blockingOperation = "Object.wait"
+   4   pinnedReason = "Freeze or preempt failed (2)"
+   4   blockingOperation = "Contended monitor enter"
+   1   pinnedReason = "VM call to PinDemo$SlowInit.<clinit> on stack"
+   1   duration = 0.0716 ms
+   1   duration = 0.0552 ms
+   1   duration = 0.0435 ms
+   1   duration = 0.00142 ms
+   1   blockingOperation = "LockSupport.park"
+--- j25_clinit_zero の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:32.979 (2026-08-28)
+  duration = 0.00142 ms
+  blockingOperation = "Contended monitor enter"
+  pinnedReason = "Freeze or preempt failed (2)"
+  carrierThread = "ForkJoinPool-1-worker-9" (javaThreadId = 56)
+  eventThread = "" (javaThreadId = 40, virtual)
+  stackTrace = [
+    PinDemo.lambda$main$0(CountDownLatch, CountDownLatch, String) line: 44
+    java.util.concurrent.FutureTask.run() line: 328
+    java.util.concurrent.ThreadPerTaskExecutor$ThreadBoundFuture.run() line: 323
+    java.lang.VirtualThread.run(Runnable) line: 460
+    jdk.internal.vm.Continuation.enterSpecial(Continuation, boolean, boolean)
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 17:28:32.979 (2026-08-28)
+[0.159s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.159s][info][jfr,startup] 
+[0.159s][info][jfr,startup] Use jcmd 40167 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.159s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.159s][info][jfr,startup] 
+[0.159s][info][jfr,startup] Use jcmd 40174 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.157s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.157s][info][jfr,startup] 
+[0.157s][info][jfr,startup] Use jcmd 40181 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.157s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.157s][info][jfr,startup] 
+[0.157s][info][jfr,startup] Use jcmd 40208 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.157s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.157s][info][jfr,startup] 
+[0.157s][info][jfr,startup] Use jcmd 40215 JFR.dump name=1 to copy recording data to file.
+arm=noop threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+▶ JDK 21 / arm=noop / threshold=default — 中央値 0 件（最小 0 / 最大 0 / 全 0 0 0 0 0）
+--- j21_noop_default の内訳（最終セット） ---
+--- j21_noop_default の代表スタック（先頭 1 件） ---
+[0.155s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.155s][info][jfr,startup] 
+[0.155s][info][jfr,startup] Use jcmd 40245 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.161s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.161s][info][jfr,startup] 
+[0.161s][info][jfr,startup] Use jcmd 40273 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.162s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.162s][info][jfr,startup] 
+[0.162s][info][jfr,startup] Use jcmd 40280 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.159s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.159s][info][jfr,startup] 
+[0.159s][info][jfr,startup] Use jcmd 40307 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.160s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.160s][info][jfr,startup] 
+[0.160s][info][jfr,startup] Use jcmd 40334 JFR.dump name=1 to copy recording data to file.
+arm=sync threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+▶ JDK 21 / arm=sync / threshold=default — 中央値 8 件（最小 8 / 最大 8 / 全 8 8 8 8 8）
+--- j21_sync_default の内訳（最終セット） ---
+   3   duration = 110 ms
+   2   duration = 100 ms
+   1   duration = 106 ms
+   1   duration = 102 ms
+   1   duration = 101 ms
+--- j21_sync_default の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:41.785 (2026-08-28)
+  duration = 110 ms
+  eventThread = "" (javaThreadId = 34, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    PinDemo.syncWork() line: 59
+    ...
+  ]
+}
+
+jdk.VirtualThreadPinned {
+  startTime = 17:28:41.895 (2026-08-28)
+  duration = 100 ms
+  eventThread = "" (javaThreadId = 42, virtual)
+[0.156s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.156s][info][jfr,startup] 
+[0.156s][info][jfr,startup] Use jcmd 40384 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.158s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.158s][info][jfr,startup] 
+[0.158s][info][jfr,startup] Use jcmd 40391 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.159s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.159s][info][jfr,startup] 
+[0.159s][info][jfr,startup] Use jcmd 40398 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.168s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.168s][info][jfr,startup] 
+[0.168s][info][jfr,startup] Use jcmd 40405 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+[0.160s][info][jfr,startup] Started recording 1. No limit specified, using maxsize=250MB as default.
+[0.160s][info][jfr,startup] 
+[0.160s][info][jfr,startup] Use jcmd 40433 JFR.dump name=1 to copy recording data to file.
+arm=clinit threads=8 blockMillis=100
+java.version=21.0.12.1
+done
+▶ JDK 21 / arm=clinit / threshold=default — 中央値 1 件（最小 1 / 最大 1 / 全 1 1 1 1 1）
+--- j21_clinit_default の内訳（最終セット） ---
+   1   duration = 103 ms
+--- j21_clinit_default の代表スタック（先頭 1 件） ---
+jdk.VirtualThreadPinned {
+  startTime = 17:28:45.712 (2026-08-28)
+  duration = 103 ms
+  eventThread = "" (javaThreadId = 34, virtual)
+  stackTrace = [
+    java.lang.VirtualThread.parkOnCarrierThread(boolean, long) line: 689
+    java.lang.VirtualThread.parkNanos(long) line: 648
+    java.lang.VirtualThread.sleepNanos(long) line: 807
+    java.lang.Thread.sleep(long) line: 507
+    PinDemo$SlowInit.<clinit>() line: 69
+    ...
+  ]
+}
+
+
+==========================================
+結果
+==========================================
+JDK 25 / 既定閾値 20ms : noop=0 sync=0 clinit=8
+JDK 25 / 閾値 0ms      : noop=5（0〜11） sync=14（5〜15） clinit=21（12〜26）
+JDK 21 / 既定閾値 20ms : noop=0 sync=8 clinit=1
+JDK 25 clinit の理由別 : 初期化子の中=1 / 他スレッドの初期化待ち=7（最終セット）
+
+生ログ: /Users/user/work/repo/spring-boot-modern-examples/results/003-pinning-remaining/run.log
+実効値: /Users/user/work/repo/spring-boot-modern-examples/results/003-pinning-remaining/summary.json

@@ -1,0 +1,12 @@
+target/
+*.aot
+*.aot.config
+*.jfr
+.DS_Store
+/tmp-results/
+
+# 計測の中間生成物（jar・一時ログ）。provenance に要るのは run.log / measurements / spans / summary.json だけ。
+results/*/work/
+
+# python の実行時に出るキャッシュ
+__pycache__/

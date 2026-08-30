@@ -1,0 +1,7 @@
+nproc=4
+mem_total_kb=16373448
+mem_available_kb=14569548
+disk_avail_kb=89689280
+ci_env=true
+runner_os=ubuntu24
+runner_version=20260823.283.1

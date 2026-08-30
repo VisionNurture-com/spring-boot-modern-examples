@@ -1,0 +1,231 @@
+=== 005-native-ci 測定ログ ===
+測定日: 2026-08-29
+測定リポジトリ: orcus-tbpd/native-ci-measure（PUBLIC・4 vCPU / 16 GB を得るため）
+measure.yml の run: 33248987230 / 33249530756 / 33249550365
+measure-oom.yml の run: 33250000488 / 33250009368 / 33250018703
+
+--- setup-graalvm の版解決（証跡）---
+label=java-version-25
+setup_outcome=success
+native_image_version=native-image 25.0.2 2026-01-20
+java_home=/opt/hostedtoolcache/graalvm-community-jdk-25.0.2_linux-x64_bin/25.0.2/x64/graalvm-community-openjdk-25.0.2+10.1
+label=version-25.3
+setup_outcome=failure
+native_image_version=/home/runner/work/_temp/c604d3f8-3798-4224-9f2b-ebda34c8c067.sh: line 6: native-image: command not found
+unavailable
+java_home=/usr/lib/jvm/temurin-17-jdk-amd64
+
+--- ラウンド 1 / runner ---
+nproc=4
+mem_total_kb=16373440
+mem_available_kb=14670564
+disk_avail_kb=89689360
+ci_env=true
+runner_os=ubuntu24
+runner_version=20260823.283.1
+--- ラウンド 1 / 対照 JVM ---
+jvm_wall_sec=21.445333712
+jar_bytes=21984304
+--- ラウンド 1 / package のみ ---
+package_only_binary=no
+22218223	target/app.jar
+211418	target/app.jar.original
+--- ラウンド 1 / Native キャッシュなし ---
+{
+  "arm": "native-nocache",
+  "wall_sec": 199.447,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345632,
+  "total_build_sec": 188.008441323,
+  "peak_rss_bytes": 4329230336,
+  "system_total_bytes": 16766414848,
+  "gc_secs": 19.605,
+  "gc_count": 1958,
+  "cpu_load": 3.6393725639722083,
+  "reachable_types": 20120,
+  "reachable_methods": 91932,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- ラウンド 1 / Native キャッシュあり ---
+{
+  "arm": "native-cache",
+  "wall_sec": 202.618,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345568,
+  "total_build_sec": 191.756561667,
+  "peak_rss_bytes": 4346052608,
+  "system_total_bytes": 16766414848,
+  "gc_secs": 19.553,
+  "gc_count": 2044,
+  "cpu_load": 3.637109334440868,
+  "reachable_types": 20120,
+  "reachable_methods": 91931,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- ラウンド 2 / runner ---
+nproc=4
+mem_total_kb=16373452
+mem_available_kb=14910256
+disk_avail_kb=89689232
+ci_env=true
+runner_os=ubuntu24
+runner_version=20260823.283.1
+--- ラウンド 2 / 対照 JVM ---
+jvm_wall_sec=14.904456974
+jar_bytes=21984304
+--- ラウンド 2 / package のみ ---
+package_only_binary=no
+22218223	target/app.jar
+211418	target/app.jar.original
+--- ラウンド 2 / Native キャッシュなし ---
+{
+  "arm": "native-nocache",
+  "wall_sec": 214.902,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345624,
+  "total_build_sec": 203.75494396800002,
+  "peak_rss_bytes": 4444340224,
+  "system_total_bytes": 16766414848,
+  "gc_secs": 19.435,
+  "gc_count": 2289,
+  "cpu_load": 3.6490891939843304,
+  "reachable_types": 20120,
+  "reachable_methods": 91932,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- ラウンド 2 / Native キャッシュあり ---
+{
+  "arm": "native-cache",
+  "wall_sec": 219.361,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345560,
+  "total_build_sec": 208.88369409199998,
+  "peak_rss_bytes": 4287074304,
+  "system_total_bytes": 16766414848,
+  "gc_secs": 19.637,
+  "gc_count": 2334,
+  "cpu_load": 3.66832565811428,
+  "reachable_types": 20120,
+  "reachable_methods": 91931,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- ラウンド 3 / runner ---
+nproc=4
+mem_total_kb=16373448
+mem_available_kb=14569548
+disk_avail_kb=89689280
+ci_env=true
+runner_os=ubuntu24
+runner_version=20260823.283.1
+--- ラウンド 3 / 対照 JVM ---
+jvm_wall_sec=22.151938775
+jar_bytes=21984304
+--- ラウンド 3 / package のみ ---
+package_only_binary=no
+22218223	target/app.jar
+211418	target/app.jar.original
+--- ラウンド 3 / Native キャッシュなし ---
+{
+  "arm": "native-nocache",
+  "wall_sec": 204.851,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345560,
+  "total_build_sec": 193.938142838,
+  "peak_rss_bytes": 4521082880,
+  "system_total_bytes": 16765378560,
+  "gc_secs": 19.414,
+  "gc_count": 2202,
+  "cpu_load": 3.674542569416984,
+  "reachable_types": 20120,
+  "reachable_methods": 91931,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- ラウンド 3 / Native キャッシュあり ---
+{
+  "arm": "native-cache",
+  "wall_sec": 200.888,
+  "exit_code": 0,
+  "binary_exists": true,
+  "binary_bytes": 97192200,
+  "build_output_json": true,
+  "image_bytes": 102345640,
+  "total_build_sec": 191.711252901,
+  "peak_rss_bytes": 4419584000,
+  "system_total_bytes": 16766402560,
+  "gc_secs": 19.817,
+  "gc_count": 2020,
+  "cpu_load": 3.660017346053773,
+  "reachable_types": 20120,
+  "reachable_methods": 91932,
+  "graalvm_version": "GraalVM CE 25.0.2+10.1",
+  "java_version": "25.0.2+10"
+}
+--- OOM ラウンド 1 ---
+{
+  "arm": "native-xmx-limited",
+  "wall_sec": 377.242,
+  "exit_code": 1,
+  "binary_exists": false,
+  "binary_bytes": 0,
+  "build_output_json": false
+}
+oom_lines=1
+terminating_lines=1
+build_failure_lines=1
+--- OOM ラウンド 2 ---
+{
+  "arm": "native-xmx-limited",
+  "wall_sec": 533.566,
+  "exit_code": 1,
+  "binary_exists": false,
+  "binary_bytes": 0,
+  "build_output_json": false
+}
+oom_lines=1
+terminating_lines=1
+build_failure_lines=1
+--- OOM ラウンド 3 ---
+{
+  "arm": "native-xmx-limited",
+  "wall_sec": 457.62,
+  "exit_code": 1,
+  "binary_exists": false,
+  "binary_bytes": 0,
+  "build_output_json": false
+}
+oom_lines=1
+terminating_lines=1
+build_failure_lines=1
+
+--- 版（ラウンド 1 の実機出力）---
+openjdk version "25.0.2" 2026-01-20
+OpenJDK Runtime Environment GraalVM CE 25.0.2+10.1 (build 25.0.2+10-jvmci-b01)
+OpenJDK 64-Bit Server VM GraalVM CE 25.0.2+10.1 (build 25.0.2+10-jvmci-b01, mixed mode, sharing)
+native-image 25.0.2 2026-01-20
+GraalVM Runtime Environment GraalVM CE 25.0.2+10.1 (build 25.0.2+10-jvmci-b01)
+Substrate VM GraalVM CE 25.0.2+10.1 (build 25.0.2+10, serial gc)
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+Maven home: /usr/share/apache-maven-3.9.16
+Java version: 25.0.2, vendor: GraalVM Community, runtime: /opt/hostedtoolcache/graalvm-community-jdk-25.0.2_linux-x64_bin/25.0.2/x64/graalvm-community-openjdk-25.0.2+10.1
+Default locale: en, platform encoding: UTF-8
+OS name: "linux", version: "6.17.0-1022-azure", arch: "amd64", family: "unix"

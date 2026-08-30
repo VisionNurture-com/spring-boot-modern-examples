@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.example</groupId>
+    <artifactId>spring-boot-modern-examples</artifactId>
+    <version>0.1.0</version>
+  </parent>
+
+  <artifactId>app-otelcost</artifactId>
+  <name>app-otelcost</name>
+  <description>006（計装のコスト）の計測専用。app と同じソースを、計装あり / なしの 2 通りでビルドする</description>
+
+  <!--
+    🔴 app 本体の pom を触らないために別モジュールにしている。
+    Spring Boot の repackage は META-INF/maven へ pom.xml を埋め込むため、
+    無効なプロファイルを 1 つ足すだけでも jar のバイト数が変わる（実測 +253 bytes）。
+    002 と 004 は app.jar のバイト数を記事に載せており、そこを動かせない。
+
+    対照（計装なし）と計装ありを「同じ pom」で作り分けるので、
+    jar の差は starter のぶんだけになる（埋め込まれる pom は両者で同一）。
+  -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>otel</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-opentelemetry</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
+  <build>
+    <finalName>app-otelcost</finalName>
+    <sourceDirectory>${project.basedir}/../app/src/main/java</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

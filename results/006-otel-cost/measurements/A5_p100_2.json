@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:18120/work?n=2000",
+  "concurrency": 8,
+  "warmup_sec": 8,
+  "duration_sec": 10,
+  "requests": 390675,
+  "errors": 0,
+  "throughput_rps": 39057.9,
+  "p50_ms": 0.2,
+  "p95_ms": 0.26,
+  "p99_ms": 0.38,
+  "max_ms": 3.43,
+  "cpu_sec": 52.12,
+  "rss_max_kb": 646144
+}

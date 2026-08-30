@@ -1,0 +1,4 @@
+label=java-version-25
+setup_outcome=success
+native_image_version=native-image 25.0.2 2026-01-20
+java_home=/opt/hostedtoolcache/graalvm-community-jdk-25.0.2_linux-x64_bin/25.0.2/x64/graalvm-community-openjdk-25.0.2+10.1

@@ -1,0 +1,232 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # 公開用リポジトリでのみ走る。コミットの author / committer が公開用 identity かを見る。
+  # 公開用は移管のたびに使い捨てクローンから push するため、リポジトリローカルの
+  # git config が無く、検証用の identity のまま入りやすい。
+  identity:
+    name: commit identity
+    if: github.repository_owner == 'VisionNurture-com'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: 公開用 identity 以外のコミットが無いことを確かめる
+        run: |
+          set -euo pipefail
+          expected='TechBizPlusD <blog@techbizplusd.com>'
+          bad="$(git log --format='%H%x09%an <%ae>%x09%cn <%ce>' \
+                 | awk -F'\t' -v e="$expected" '$2 != e || $3 != e')"
+          if [ -n "$bad" ]; then
+            echo "::error::公開用 identity 以外のコミットがあります（期待: $expected）"
+            echo "$bad"
+            exit 1
+          fi
+          echo "全コミットが $expected です"
+
+  m0-verify:
+    name: M0 構造と provenance の検査
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: 構造検査
+        run: python3 tools/check-structure.py
+      - name: provenance 突合
+        run: python3 tools/check-provenance.py
+      - name: 中立性の検査（実行環境に固有の情報が残っていないか）
+        run: python3 tools/check-neutrality.py
+
+  m1-migration:
+    name: M1 移行の計測ハーネスが動くことの確認
+    runs-on: ubuntu-latest
+    # 🔴 m1-smoke へ相乗りさせず独立させている。本シナリオは Maven ビルドを 7 回
+    #    （腕 2 × 波 3 + 基準 1）回すため、m1-smoke（実測最長 7 分 03 秒）へ足すと
+    #    余裕率が work-rules §11.2 の基準 2 倍を割る。独立させれば双方の余裕が保てる。
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: 001-migration-3x-to-4x を実行する
+        # 🔴 出力は tmp-results/ へ逃がす。runner は測定機と別の機体のため、
+        #    ここで得た値を results/ へ書き戻すと expected.md との突合が壊れる。
+        #    本 job が確かめるのは「ハーネスが動くこと」だけで、値そのものではない。
+        # ⚠️ 件数そのものは機体に依存しないはずだが、それを CI の値で主張しない。
+        #    記事に載せる値は results/ に置いた macOS の実測だけを出典とする。
+        run: |
+          bash scenarios/001-migration-3x-to-4x/run.sh \
+            --out "$GITHUB_WORKSPACE/tmp-results/001-migration-3x-to-4x"
+      - name: 生ログを成果物として残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-migration-results
+          path: tmp-results/
+
+  m1-smoke:
+    name: M1 計測ハーネスが動くことの確認
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: 002-startup-3ways を native 抜き・少ないセット数で実行する
+        # 🔴 出力は tmp-results/ へ逃がす。CI の runner は macOS の測定機と別の機体のため、
+        #    ここで得た値を results/ へ書き戻すと expected.md との突合が壊れる。
+        #    本 job が確かめるのは「ハーネスが動くこと」だけで、値そのものではない。
+        # 🔴 native を外すのは GraalVM の導入とビルドに時間がかかるため。
+        #    CI 上での Native Image ビルドは 005（CI で Native は回るか）が測定対象として扱う。
+        run: |
+          bash scenarios/002-startup-3ways/run.sh \
+            --methods jvm,jvmx,aotfat,aot \
+            --sets 2 \
+            --out "$GITHUB_WORKSPACE/tmp-results/002-startup-3ways"
+      - name: 002-cache-pitfalls を少ないセット数で実行する
+        # 🔴 こちらも値ではなく「ハーネスが動くこと」だけを確かめる。出力は tmp-results/ へ逃がす。
+        #    本シナリオは GraalVM を要さない（-Pnative は process-aot を走らせるだけ）ため M1 で回る。
+        run: |
+          bash scenarios/002-cache-pitfalls/run.sh \
+            --sets 2 \
+            --out "$GITHUB_WORKSPACE/tmp-results/002-cache-pitfalls"
+      - name: 002-steady-design を短い計測時間で実行する
+        # 🔴 値ではなく「ハーネスが動くこと」だけを確かめる。出力は tmp-results/ へ逃がす。
+        run: |
+          bash scenarios/002-steady-design/run.sh \
+            --duration-sec 3 \
+            --out "$GITHUB_WORKSPACE/tmp-results/002-steady-design"
+
+      - name: 003-pinning-remaining を少ないセット数で実行する
+        # 🔴 値ではなく「ハーネスが動くこと」だけを確かめる。出力は tmp-results/ へ逃がす。
+        #    JDK 21 は runner に無いため対照はスキップされ、該当値は -1 になる。
+        run: |
+          bash scenarios/003-pinning-remaining/run.sh \
+            --sets 1 \
+            --out "$GITHUB_WORKSPACE/tmp-results/003-pinning-remaining"
+      - name: 生ログを成果物として残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-smoke-results
+          path: tmp-results/
+          if-no-files-found: warn
+
+  m2-smoke:
+    name: M2 コンテナを使う計測ハーネスが動くことの確認
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: 003-pool-sizing を 1 ラウンド・短い計測時間で実行する
+        # 🔴 出力は tmp-results/ へ逃がす。runner は測定機と別の機体で、
+        #    ここで得た値を results/ へ書き戻すと expected.md との突合が壊れる。
+        #    本 job が確かめるのは「コンテナを立てて計測が回ること」だけである。
+        run: |
+          bash scenarios/003-pool-sizing/run.sh \
+            --rounds 1 \
+            --duration-sec 3 \
+            --out "$GITHUB_WORKSPACE/tmp-results/003-pool-sizing"
+      - name: 生ログを成果物として残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-smoke-results
+          path: tmp-results/
+          if-no-files-found: warn
+
+  m2-image-size:
+    name: M2 イメージのサイズ計測ハーネスが動くことの確認
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: 004-image-size を起動 1 回で実行する
+        # 🔴 出力は tmp-results/ へ逃がす。runner は測定機と別の機体で、
+        #    ここで得た値を results/ へ書き戻すと expected.md との突合が壊れる。
+        # 🔵 本 job にはもう 1 つ役目がある。runner の Docker は containerd image store ではなく
+        #    旧来の graph driver で動くため、`docker image inspect` の `.Size` が
+        #    圧縮側と展開側のどちらを返すかを、測定機と別の環境で確かめられる。
+        run: |
+          bash scenarios/004-image-size/run.sh \
+            --starts 1 \
+            --out "$GITHUB_WORKSPACE/tmp-results/004-image-size"
+      - name: image store の種類を記録する
+        if: always()
+        run: |
+          docker info --format '{{.Driver}} / {{.DriverStatus}}' \
+            | tee "$GITHUB_WORKSPACE/tmp-results/004-image-size/docker-driver.txt"
+      - name: 生ログを成果物として残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-image-size-results
+          path: tmp-results/
+          if-no-files-found: warn
+
+  m2-otel-cost:
+    name: M2 計装コストの計測ハーネスが動くことの確認
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: 006-otel-cost を 1 ラウンド・短い計測時間で実行する
+        # 🔴 出力は tmp-results/ へ逃がす。runner は測定機と別の機体で、
+        #    ここで得た値を results/ へ書き戻すと expected.md との突合が壊れる。
+        # 🔵 本 job が確かめるのは値ではなくハーネスが動くことである。
+        #    とくに「計装なしの jar でコレクタの受信が 0 本になるか」は、
+        #    別の機体でも成り立たなければ対照の作り方が間違っている。
+        run: |
+          bash scenarios/006-otel-cost/run.sh \
+            --phase build \
+            --out "$GITHUB_WORKSPACE/tmp-results/006-otel-cost"
+          bash scenarios/006-otel-cost/run.sh \
+            --phase verify \
+            --out "$GITHUB_WORKSPACE/tmp-results/006-otel-cost"
+          bash scenarios/006-otel-cost/run.sh \
+            --phase app --rounds 1 --warmup-sec 3 --duration-sec 4 \
+            --out "$GITHUB_WORKSPACE/tmp-results/006-otel-cost"
+      - name: 対照が本当に計装なしであることを確かめる
+        run: |
+          n=$(cat "$GITHUB_WORKSPACE/tmp-results/006-otel-cost/spans/A0_plain.count")
+          echo "計装なしの受信スパン: ${n} 本"
+          if [ "$n" != "0" ]; then
+            echo "🔴 計装なしの腕でスパンを受信しました。対照の作り方が壊れています。" >&2
+            exit 1
+          fi
+      - name: 生ログを成果物として残す
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-otel-cost-results
+          path: tmp-results/
+          if-no-files-found: warn

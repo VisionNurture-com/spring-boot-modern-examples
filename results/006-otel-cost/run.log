@@ -1,0 +1,159 @@
+=== シナリオ: 006-otel-cost / モード: M2 ===
+実行日時: 2026-08-30T06:04:28Z
+ラウンド: 3 / ウォームアップ: 8s / 計測: 10s / 同時実行: 8
+負荷: app 2000 反復 / app-db 20000 行
+
+--- 環境 ---
+os: Darwin 25.6.0
+arch: arm64
+cpu: 14 コア
+java: openjdk version "25.0.4" 2026-07-21 LTS
+docker: Docker version 29.7.2, build a7dcaa6
+collector image: otel/opentelemetry-collector:0.159.0
+postgres image: postgres:18.6
+
+--- 4 つの jar を作る（計装あり / なし × app / app-db）---
+jar app-plain: 21984451 bytes
+jar app-otel: 29779989 bytes
+jar appdb-plain: 22593700 bytes
+jar appdb-otel: 31759546 bytes
+
+=== 完了（フェーズ: build）===
+--- 検算パス（受信スパンを数える）---
+検算 A0_plain: リクエスト 100 回 → 受信スパン 0 本
+検算 A1_p000: リクエスト 100 回 → 受信スパン 0 本
+検算 A2_p001: リクエスト 100 回 → 受信スパン 0 本
+検算 A3_default: リクエスト 100 回 → 受信スパン 10 本
+検算 A4_p050: リクエスト 100 回 → 受信スパン 57 本
+検算 A5_p100: リクエスト 100 回 → 受信スパン 101 本
+検算 B0_plain: リクエスト 100 回 → 受信スパン 0 本
+検算 B1_default: リクエスト 100 回 → 受信スパン 8 本
+検算 B2_p100: リクエスト 100 回 → 受信スパン 101 本
+
+=== 完了（フェーズ: verify）===
+--- 計測: app（軽い仕事・2000 反復）---
+round 1 A0_plain: 39880.4 rps / p99 0.39 ms / cpu 44.76 s / rss 638320 KB
+round 1 A1_p000: 39617.8 rps / p99 0.39 ms / cpu 45.95 s / rss 633856 KB
+round 1 A2_p001: 39388.9 rps / p99 0.4 ms / cpu 45.86 s / rss 648096 KB
+round 1 A3_default: 39111.9 rps / p99 0.41 ms / cpu 46.38 s / rss 632960 KB
+round 1 A4_p050: 39507.0 rps / p99 0.38 ms / cpu 49.82 s / rss 654544 KB
+round 1 A5_p100: 39037.7 rps / p99 0.38 ms / cpu 49.98 s / rss 628928 KB
+
+=== 完了（フェーズ: app）===
+--- 計測: app（軽い仕事・2000 反復）---
+round 2 A0_plain: 40054.2 rps / p99 0.37 ms / cpu 43.61 s / rss 602800 KB
+round 2 A1_p000: 39856.1 rps / p99 0.38 ms / cpu 46.4 s / rss 628160 KB
+round 2 A2_p001: 39878.2 rps / p99 0.38 ms / cpu 46.79 s / rss 628288 KB
+round 2 A3_default: 39944.2 rps / p99 0.37 ms / cpu 47.97 s / rss 649456 KB
+round 2 A4_p050: 39381.4 rps / p99 0.38 ms / cpu 49.46 s / rss 650736 KB
+round 2 A5_p100: 39057.9 rps / p99 0.38 ms / cpu 52.12 s / rss 646144 KB
+
+=== 完了（フェーズ: app）===
+--- 計測: app（軽い仕事・2000 反復）---
+round 3 A0_plain: 40126.2 rps / p99 0.37 ms / cpu 43.81 s / rss 624768 KB
+round 3 A1_p000: 40276.3 rps / p99 0.37 ms / cpu 46.88 s / rss 636352 KB
+round 3 A2_p001: 40021.9 rps / p99 0.38 ms / cpu 46.7 s / rss 649360 KB
+round 3 A3_default: 39931.0 rps / p99 0.38 ms / cpu 46.65 s / rss 626000 KB
+round 3 A4_p050: 39482.8 rps / p99 0.39 ms / cpu 49.04 s / rss 642864 KB
+round 3 A5_p100: 39270.3 rps / p99 0.38 ms / cpu 51.84 s / rss 652032 KB
+
+=== 完了（フェーズ: app）===
+--- 計測: app-db（重い仕事・20000 行）---
+round 1 B0_plain: 771.6 rps / p99 12.25 ms / cpu 7.09 s / rss 283600 KB
+round 1 B1_default: 767.2 rps / p99 13.01 ms / cpu 8.85 s / rss 319248 KB
+round 1 B2_p100: 770.0 rps / p99 13.36 ms / cpu 9.79 s / rss 362176 KB
+round 2 B0_plain: 778.2 rps / p99 12.34 ms / cpu 7.17 s / rss 267856 KB
+round 2 B1_default: 772.7 rps / p99 12.25 ms / cpu 9.07 s / rss 339456 KB
+round 2 B2_p100: 771.6 rps / p99 12.34 ms / cpu 10.07 s / rss 371792 KB
+round 3 B0_plain: 744.3 rps / p99 20.0 ms / cpu 7.26 s / rss 282480 KB
+round 3 B1_default: 768.0 rps / p99 12.65 ms / cpu 9.58 s / rss 371248 KB
+round 3 B2_p100: 759.9 rps / p99 13.68 ms / cpu 9.41 s / rss 309392 KB
+
+=== 完了（フェーズ: db）===
+--- 検算: キュー溢れ（送信先は生かしたまま）---
+率 1.0: 計測リクエスト 387529 件 / キューで捨てられたスパン 0 本
+率 0.5: 計測リクエスト 396376 件 / キューで捨てられたスパン 0 本
+率 0.1: 計測リクエスト 390764 件 / キューで捨てられたスパン 0 本
+率 0.01: 計測リクエスト 400369 件 / キューで捨てられたスパン 0 本
+
+=== 完了（フェーズ: queue）===
+--- 検算: キュー溢れ（送信先は生かしたまま）---
+ラウンド 1 率 1.0: 計測リクエスト 386462 件 / キューで捨てられたスパン 7554 本
+ラウンド 1 率 0.5: 計測リクエスト 394617 件 / キューで捨てられたスパン 0 本
+ラウンド 1 率 0.1: 計測リクエスト 397055 件 / キューで捨てられたスパン 0 本
+ラウンド 1 率 0.01: 計測リクエスト 399358 件 / キューで捨てられたスパン 0 本
+
+=== 完了（フェーズ: queue）===
+--- 検算: キュー溢れ（送信先は生かしたまま）---
+ラウンド 2 率 1.0: 計測リクエスト 389507 件 / キューで捨てられたスパン 0 本
+ラウンド 2 率 0.5: 計測リクエスト 394868 件 / キューで捨てられたスパン 0 本
+ラウンド 2 率 0.1: 計測リクエスト 380613 件 / キューで捨てられたスパン 0 本
+ラウンド 2 率 0.01: 計測リクエスト 400214 件 / キューで捨てられたスパン 0 本
+
+=== 完了（フェーズ: queue）===
+--- 検算: キュー溢れ（送信先は生かしたまま）---
+ラウンド 3 率 1.0: 計測リクエスト 386299 件 / キューで捨てられたスパン 5001 本
+ラウンド 3 率 0.5: 計測リクエスト 394924 件 / キューで捨てられたスパン 0 本
+ラウンド 3 率 0.1: 計測リクエスト 397342 件 / キューで捨てられたスパン 0 本
+ラウンド 3 率 0.01: 計測リクエスト 399114 件 / キューで捨てられたスパン 0 本
+
+=== 完了（フェーズ: queue）===
+--- 計測: コレクタ停止（C1・率 1.0）---
+停止前: 38794.8 rps / p99 0.4 ms
+コレクタを停止しました
+停止後: 39279.6 rps / p99 0.4 ms / errors 0
+停止後のアプリログ: 捨てられたスパン 631144 本 / エクスポート失敗 2 行
+
+=== 完了（フェーズ: drop）===
+--- 集計 ---
+A0_plain     40054.2 rps  p50   0.19  p95    0.24  p99    0.37 ms  cpu  43.81 s  rss   624768 KB  err 0
+A1_p000      39856.1 rps  p50   0.20  p95    0.25  p99    0.38 ms  cpu  46.40 s  rss   633856 KB  err 0
+A2_p001      39878.2 rps  p50   0.19  p95    0.25  p99    0.38 ms  cpu  46.70 s  rss   648096 KB  err 0
+A3_default   39931.0 rps  p50   0.19  p95    0.25  p99    0.38 ms  cpu  46.65 s  rss   632960 KB  err 0
+A4_p050      39482.8 rps  p50   0.20  p95    0.25  p99    0.38 ms  cpu  49.46 s  rss   650736 KB  err 0
+A5_p100      39057.9 rps  p50   0.20  p95    0.26  p99    0.38 ms  cpu  51.84 s  rss   646144 KB  err 0
+B0_plain       771.6 rps  p50  10.19  p95   11.67  p99   12.34 ms  cpu   7.17 s  rss   282480 KB  err 0
+B1_default     768.0 rps  p50  10.19  p95   11.69  p99   12.65 ms  cpu   9.07 s  rss   339456 KB  err 0
+B2_p100        770.0 rps  p50  10.20  p95   11.64  p99   13.36 ms  cpu   9.79 s  rss   362176 KB  err 0
+
+A1_p000     対 A0_plain: p99 +2.7%  スループット -0.5%  CPU +5.9%  RSS +1.5%
+A2_p001     対 A0_plain: p99 +2.7%  スループット -0.4%  CPU +6.6%  RSS +3.7%
+A3_default  対 A0_plain: p99 +2.7%  スループット -0.3%  CPU +6.5%  RSS +1.3%
+A4_p050     対 A0_plain: p99 +2.7%  スループット -1.4%  CPU +12.9%  RSS +4.2%
+A5_p100     対 A0_plain: p99 +2.7%  スループット -2.5%  CPU +18.3%  RSS +3.4%
+B1_default  対 B0_plain: p99 +2.5%  スループット -0.5%  CPU +26.5%  RSS +20.2%
+B2_p100     対 B0_plain: p99 +8.3%  スループット -0.2%  CPU +36.5%  RSS +28.2%
+
+C1 停止前: 38794.8 rps / p99 0.4 ms / err 0
+C1 停止後: 39279.6 rps / p99 0.4 ms / err 0  (p99 +0.0%)
+
+summary: /Users/user/work/repo/spring-boot-modern-examples/results/006-otel-cost/summary.json
+=== 完了（フェーズ: aggregate）===
+--- 集計 ---
+A0_plain     40054.2 rps  p50   0.19  p95    0.24  p99    0.37 ms  cpu  43.81 s  rss   624768 KB  err 0
+A1_p000      39856.1 rps  p50   0.20  p95    0.25  p99    0.38 ms  cpu  46.40 s  rss   633856 KB  err 0
+A2_p001      39878.2 rps  p50   0.19  p95    0.25  p99    0.38 ms  cpu  46.70 s  rss   648096 KB  err 0
+A3_default   39931.0 rps  p50   0.19  p95    0.25  p99    0.38 ms  cpu  46.65 s  rss   632960 KB  err 0
+A4_p050      39482.8 rps  p50   0.20  p95    0.25  p99    0.38 ms  cpu  49.46 s  rss   650736 KB  err 0
+A5_p100      39057.9 rps  p50   0.20  p95    0.26  p99    0.38 ms  cpu  51.84 s  rss   646144 KB  err 0
+B0_plain       771.6 rps  p50  10.19  p95   11.67  p99   12.34 ms  cpu   7.17 s  rss   282480 KB  err 0
+B1_default     768.0 rps  p50  10.19  p95   11.69  p99   12.65 ms  cpu   9.07 s  rss   339456 KB  err 0
+B2_p100        770.0 rps  p50  10.20  p95   11.64  p99   13.36 ms  cpu   9.79 s  rss   362176 KB  err 0
+
+A1_p000     対 A0_plain: p99 +2.7%  スループット -0.5%  CPU +5.9%  RSS +1.5%
+A2_p001     対 A0_plain: p99 +2.7%  スループット -0.4%  CPU +6.6%  RSS +3.7%
+A3_default  対 A0_plain: p99 +2.7%  スループット -0.3%  CPU +6.5%  RSS +1.3%
+A4_p050     対 A0_plain: p99 +2.7%  スループット -1.4%  CPU +12.9%  RSS +4.2%
+A5_p100     対 A0_plain: p99 +2.7%  スループット -2.5%  CPU +18.3%  RSS +3.4%
+B1_default  対 B0_plain: p99 +2.5%  スループット -0.5%  CPU +26.5%  RSS +20.2%
+B2_p100     対 B0_plain: p99 +8.3%  スループット -0.2%  CPU +36.5%  RSS +28.2%
+
+n 感度（n=20000・A0/A3/A5 のみ）
+A3_default  対 A0_plain: CPU/req +5.6%  スループット -1.1%
+A5_p100     対 A0_plain: CPU/req +10.5%  スループット -3.0%
+
+C1 停止前: 38794.8 rps / p99 0.4 ms / err 0
+C1 停止後: 39279.6 rps / p99 0.4 ms / err 0  (p99 +0.0%)
+
+summary: /Users/user/work/repo/spring-boot-modern-examples/results/006-otel-cost/summary.json
+=== 完了（フェーズ: aggregate）===
