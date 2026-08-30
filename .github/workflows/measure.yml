@@ -103,7 +103,7 @@ jobs:
   native-nocache:
     name: Native ビルド（Maven キャッシュなし）
     runs-on: ubuntu-latest
-    # 🔴 暫定値。ラウンド 1 の実測は最長 7 分 16 秒（上限を絞った腕）。
+    # 🔴 暫定値。ラウンド 1 の実測は最長 7 分 16 秒（上限を絞ったアーム）。
     #    3 ラウンドの実測が出たら work-rules §11.2（余裕率 2 倍以上）で決め直す。
     timeout-minutes: 30
     steps:
@@ -191,7 +191,7 @@ jobs:
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: 上限を絞って native ビルドを試す
-        # 落ちることを確かめる腕。失敗が期待値なので終了コードで job を落とさない。
+        # 落ちることを確かめるアーム。失敗が期待値なので終了コードで job を落とさない。
         env:
           NATIVE_IMAGE_OPTIONS: -H:BuildOutputJSONFile=${{ github.workspace }}/out/build-output.json
         run: |

@@ -3,9 +3,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 仮想スレッドがキャリアスレッドを手放せなくなる経路を、腕ごとに 1 プロセスで再現する。
+ * 仮想スレッドがキャリアスレッドを手放せなくなる経路を、アームごとに 1 プロセスで再現する。
  *
- * <p>腕:
+ * <p>アーム:
  * <ul>
  *   <li>{@code noop}        —— 何もしない。ハーネス自身が出すイベントを測るための対照</li>
  *   <li>{@code sync}        —— synchronized ブロックの中でブロックする</li>

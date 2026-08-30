@@ -7,13 +7,13 @@
 
 パブリックリポジトリの標準 runner は **4 vCPU / 16 GB**、プライベートは **2 vCPU / 8 GB**
 である（[docs.github.com](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)）。
-本リポジトリは PRIVATE のため、ここで回すと 8 GB 側しか測れない。そこで測定専用の
-パブリックリポジトリ **[`orcus-tbpd/native-ci-measure`](https://github.com/orcus-tbpd/native-ci-measure)**
-を用意し、そこで回した結果を本シナリオへ取り込む。
+検証用リポジトリは PRIVATE のため、そこで回すと 8 GB 側しか測れない。測定は
+**[`VisionNurture-com/spring-boot-modern-examples`](https://github.com/VisionNurture-com/spring-boot-modern-examples)**（公開サンプル）で回し、
+その結果を本シナリオへ取り込む。`measure.yml` と `measure-oom.yml` を同居させてある。
 
-## 腕
+## アーム
 
-| 腕 | 内容 |
+| アーム | 内容 |
 |---|---|
 | `jvm-package` | 対照。`mvn package`（JVM 用の jar）|
 | `native-nocache` | Native ビルド。Maven キャッシュなし |
@@ -32,8 +32,8 @@
 3 ラウンドまわして中央値を取る。生ログと各ラウンドの JSON は `results/005-native-ci/raw/`
 に残してある。
 
-## 落ちる腕を別ワークフローにしている理由
+## 落ちるアームを別ワークフローにしている理由
 
 GitHub Actions の既定シェルは `bash -e` である。`pipefail` と併せると、`mvn` が
 非ゼロで終わった時点でステップごと中断し、**集計に到達しない**。落ちることが期待値の
-腕だけは `set +e` を明示したワークフロー（`measure-oom.yml`）で回す。
+アームだけは `set +e` を明示したワークフロー（`measure-oom.yml`）で回す。

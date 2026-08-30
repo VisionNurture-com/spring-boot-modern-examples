@@ -1,7 +1,7 @@
 name: measure-oom
 
-# 落ちる腕だけを取り直すためのワークフロー。
-# 🔴 measure.yml の同じ腕は、GitHub Actions の既定シェルが `bash -e` であるため
+# 落ちるアームだけを取り直すためのワークフロー。
+# 🔴 measure.yml の同じアームは、GitHub Actions の既定シェルが `bash -e` であるため
 #    `mvn` が非ゼロで終わった時点でステップごと中断し、集計に到達しなかった。
 #    ここでは `set +e` で明示的に外してから終了コードを拾う。
 on:

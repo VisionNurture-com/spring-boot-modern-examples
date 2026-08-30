@@ -49,7 +49,7 @@ jobs:
     name: M1 移行の計測ハーネスが動くことの確認
     runs-on: ubuntu-latest
     # 🔴 m1-smoke へ相乗りさせず独立させている。本シナリオは Maven ビルドを 7 回
-    #    （腕 2 × 波 3 + 基準 1）回すため、m1-smoke（実測最長 7 分 03 秒）へ足すと
+    #    （アーム 2 × 波 3 + 基準 1）回すため、m1-smoke（実測最長 7 分 03 秒）へ足すと
     #    余裕率が work-rules §11.2 の基準 2 倍を割る。独立させれば双方の余裕が保てる。
     timeout-minutes: 20
     steps:
@@ -220,7 +220,7 @@ jobs:
           n=$(cat "$GITHUB_WORKSPACE/tmp-results/006-otel-cost/spans/A0_plain.count")
           echo "計装なしの受信スパン: ${n} 本"
           if [ "$n" != "0" ]; then
-            echo "🔴 計装なしの腕でスパンを受信しました。対照の作り方が壊れています。" >&2
+            echo "🔴 計装なしのアームでスパンを受信しました。対照の作り方が壊れています。" >&2
             exit 1
           fi
       - name: 生ログを成果物として残す

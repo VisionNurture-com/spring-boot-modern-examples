@@ -25,11 +25,11 @@
 #      隣り合わせる）で回す。機体の熱・背景負荷を全方式へ均等に乗せるため。
 #   3) 捨て走りを 1 セット行い記録しない。初回のページキャッシュ効果を特定の方式へ
 #      乗せないため。
-#   4) 展開だけした腕（jvmx）を置く。展開そのものの寄与と、キャッシュの寄与を分けるため。
-#   5) 展開せずにキャッシュを当てた腕（aotfat）を置く。手順を飛ばしたときに何が起きるかを
+#   4) 展開だけしたアーム（jvmx）を置く。展開そのものの寄与と、キャッシュの寄与を分けるため。
+#   5) 展開せずにキャッシュを当てたアーム（aotfat）を置く。手順を飛ばしたときに何が起きるかを
 #      読者へ示すため。
 #
-# 腕（方式）の意味:
+# アーム（方式）の意味:
 #   jvm     素の JVM・実行可能 jar のまま       ← 基準。多くの人の出発点
 #   jvmx    素の JVM・展開した形               ← 展開そのものの寄与を見る
 #   aotfat  AOT キャッシュ・展開せずに当てる    ← 手順を飛ばした場合
@@ -38,13 +38,13 @@
 #
 # 出力: results/002-startup-3ways/run.log と summary.json（--out で変更可）
 # 使い方:
-#   bash scenarios/002-startup-3ways/run.sh                        # 既定 7 セット・5 腕
+#   bash scenarios/002-startup-3ways/run.sh                        # 既定 7 セット・5 アーム
 #   bash scenarios/002-startup-3ways/run.sh --sets 3               # セット数を変える
 #   bash scenarios/002-startup-3ways/run.sh --methods jvm,aot      # GraalVM なしで試す
 #   bash scenarios/002-startup-3ways/run.sh --out /tmp/x           # 出力先を変える
 #
-# 🔴 --methods で腕を減らした結果を results/ へ書かないこと。
-#    リポジトリにコミットする summary.json は常に全腕そろった全量とする。
+# 🔴 --methods でアームを減らした結果を results/ へ書かないこと。
+#    リポジトリにコミットする summary.json は常に全アームそろった全量とする。
 #    （部分実行は必ず --out で別ディレクトリへ逃がす）
 
 set -euo pipefail
@@ -78,7 +78,7 @@ WANT_EXTRACT=0
 [ "$WANT_AOT" = "1" ] && WANT_EXTRACT=1
 
 if [ "$OUT" = "$ROOT/results/$SCENARIO" ] && [ "$METHODS" != "$ALL_METHODS" ]; then
-  echo "🔴 腕を減らした結果を results/ へ書こうとしています。--out で別ディレクトリを指定してください。" >&2
+  echo "🔴 アームを減らした結果を results/ へ書こうとしています。--out で別ディレクトリを指定してください。" >&2
   exit 3
 fi
 
@@ -89,7 +89,7 @@ log() { echo "$@" | tee -a "$LOG"; }
 
 log "=== シナリオ: $SCENARIO / モード: M3 ==="
 log "実行日時: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-log "腕: $METHODS / セット数: ${SETS}（+ 捨て走り 1 セット）"
+log "アーム: $METHODS / セット数: ${SETS}（+ 捨て走り 1 セット）"
 log ""
 log "--- 環境 ---"
 log "os: $(uname -s) $(uname -r)"
@@ -243,7 +243,7 @@ for m in wanted:                      # 捨て走り 1 セット（記録しな�
 samples = {m: [] for m in wanted}
 for s in range(1, sets + 1):
     row = []
-    for m in wanted:                  # ← 同じセット内で全腕が隣り合う
+    for m in wanted:                  # ← 同じセット内で全アームが隣り合う
         d = once(m)
         samples[m].append(d)
         row.append(f"{m}={d:.3f}")

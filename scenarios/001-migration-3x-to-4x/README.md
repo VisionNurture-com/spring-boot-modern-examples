@@ -22,9 +22,9 @@ Spring Boot **3.5.16 → 4.1.1** の移行で、**直しては再ビルドする
 | W2 | W1 + Jackson 3 へ移す | §Upgrading Jackson |
 | W3 | W2 + テストを移す | §Upgrading Testing Features |
 
-## 腕
+## アーム
 
-| 腕 | 内容 |
+| アーム | 内容 |
 |---|---|
 | **naive** | 親の版だけを上げる |
 | **classic** | 公式 §Migration Strategy が勧める中間状態（`spring-boot-starter-classic` / `spring-boot-starter-test-classic`）を最初から入れる |
@@ -40,12 +40,12 @@ scenarios/001-migration-3x-to-4x/
 ├── README.md
 ├── run.sh          # モード: M1
 ├── expected.md     # 記事に載せる値の出典
-├── apply-wave.py   # 腕 × 波の書き換え
+├── apply-wave.py   # アーム × 波の書き換え
 ├── tally.py        # ログから N1 / N2 を数える
 └── app/            # 🔴 ソースは 1 部だけ
 ```
 
-🔴 **ソースを 1 部しか持たないのは意図です。**`before` / `after` を 2 部持つと、片方だけ直したときにソースが黙ってずれ、「同じソースで版だけ違う」という前提が壊れても何も検出できません。腕と波は `/tmp` のコピーに対して作ります。
+🔴 **ソースを 1 部しか持たないのは意図です。**`before` / `after` を 2 部持つと、片方だけ直したときにソースが黙ってずれ、「同じソースで版だけ違う」という前提が壊れても何も検出できません。アームと波は `/tmp` のコピーに対して作ります。
 
 🔴 **本プロジェクトはルートの集約 POM から外してあります。**ルートの親は 4.1.1 で、ここは出発点の 3.5 系を保つ必要があるためです。
 

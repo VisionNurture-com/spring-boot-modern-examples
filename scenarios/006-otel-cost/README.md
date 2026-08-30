@@ -19,9 +19,9 @@ mvn -Potel -pl app package       # 計装あり
 ⚠️ ただし対照にも `spring-boot-starter-actuator` は入ったままである（`app` の既存構成）。
 「何も入っていない状態」ではない。
 
-## 腕
+## アーム
 
-| 腕 | アプリ | 率 | 狙い |
+| アーム | アプリ | 率 | 狙い |
 |---|---|---|---|
 | `A0_plain` | `app` | — | **対照**（計装なし）|
 | `A1_p000` | `app` | 0.0 | 記録しないが計装は入っている。判定と伝播だけのコストを分離する |
@@ -53,7 +53,7 @@ bash scenarios/006-otel-cost/run.sh --phase aggregate     # 集計だけ
 
 | 対象 | 理由 |
 |---|---|
-| メトリクスの送信コスト | `management.otlp.metrics.export.step` の既定が **1 分**で、10 秒の負荷では送信が数回しか起きない。全腕で無効にして揃えた |
+| メトリクスの送信コスト | `management.otlp.metrics.export.step` の既定が **1 分**で、10 秒の負荷では送信が数回しか起きない。全アームで無効にして揃えた |
 | ログの送信コスト | 同上（本シナリオはトレースのコストを測る）|
 | `opentelemetry-javaagent` 経路 | 別の入れ方であり、本シリーズは Spring チームの starter を測る |
 | OTel コミュニティの Spring Boot starter | 同上（`io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter`）|

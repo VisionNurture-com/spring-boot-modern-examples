@@ -124,7 +124,7 @@ start_server() {   # $1 = method
   case "$1" in
     jvm)    java -Dserver.port="$PORT" -jar "$JAR" > "$WORK/server.log" 2>&1 & ;;
     # 🔴 exec でサブシェルを java に置き換える。置き換えないと $! がサブシェルの PID を指し、
-    #    stop_server の kill がサーバ本体に届かず、次の腕とポートを奪い合う。
+    #    stop_server の kill がサーバ本体に届かず、次のアームとポートを奪い合う。
     aot)    ( cd "$EXT_DIR"; exec java -XX:AOTCache=app.aot -Dserver.port="$PORT" -jar app.jar ) > "$WORK/server.log" 2>&1 & ;;
     native) "$NATIVE_BIN" -Dserver.port="$PORT" > "$WORK/server.log" 2>&1 & ;;
   esac

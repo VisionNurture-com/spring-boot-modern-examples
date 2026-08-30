@@ -65,7 +65,7 @@ def main():
         if os.path.isfile(p):
             v[f"spans_{arm}_per100"] = int(open(p).read().strip())
 
-    # 各腕の実測（中央値）
+    # 各アームの実測（中央値）
     for arm in APP_ARMS + DB_ARMS:
         got = False
         for key, dst, nd in (("throughput_rps", "throughput_rps", 1), ("p50_ms", "p50_ms", 2),
@@ -81,7 +81,7 @@ def main():
             for f in sorted(glob.glob(os.path.join(out, "measurements", f"{arm}_*.json"))):
                 errs += json.load(open(f))["errors"]
             v[f"{arm}_errors"] = errs
-            # 🔴 CPU 秒をそのまま腕どうしで比べない。腕によってさばいたリクエスト数が
+            # 🔴 CPU 秒をそのままアームどうしで比べない。アームによってさばいたリクエスト数が
             #    2 桁違うため、1 リクエストあたりへ正規化してから比べる。
             reqs = median_of(out, arm, "requests")
             if reqs:

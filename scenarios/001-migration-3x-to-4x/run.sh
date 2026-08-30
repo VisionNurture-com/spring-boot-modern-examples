@@ -7,7 +7,7 @@
 #           素直に上げた道（naive）と、公式が勧める classic starters の道（classic）を比べる。
 #
 # 🔴 測定設計（意図的な選択）
-#   1) ソースは app/ に 1 部だけ置く。各腕は /tmp のコピーへ書き換えて作る。2 部持つと
+#   1) ソースは app/ に 1 部だけ置く。各アームは /tmp のコピーへ書き換えて作る。2 部持つと
 #      ソースが黙ってずれ、「同じソースで版だけ違う」という前提が壊れても何も鳴らない。
 #   2) 出発点は 3.5 系の GA 最新（3.5.16）。移行ガイド §Before You Start が
 #      「make sure to upgrade to the latest available 3.5.x version」と明示している。
@@ -15,7 +15,7 @@
 #      1 回のビルドで出る件数は原理的に過少である（2026-08-29 の初回計測で実際に踏んだ）。
 #   4) 各波で当てる修正は公式移行ガイドの該当節に従う。実装は run.sh に書き込むため、
 #      修正手順そのものが検証対象になる（記事の手順と 1 行ずつ突き合わせる）。
-#   5) 腕を 2 本置く。naive = 親の版だけ上げる。classic = 公式 §Migration Strategy が勧める
+#   5) アームを 2 本置く。naive = 親の版だけ上げる。classic = 公式 §Migration Strategy が勧める
 #      中間状態（spring-boot-starter-classic / -test-classic）を最初から入れる。
 #   6) 数え方を先に決める。N1 = コンパイルを止めた一意の「ファイル:行」、
 #      N2 = 非推奨警告の一意の「ファイル:行」。合算しない。
@@ -80,7 +80,7 @@ say "出発点: Spring Boot ${BEFORE_VERSION} / 到達点: Spring Boot ${AFTER_V
 say "作業ディレクトリ: $WORK"
 say ""
 
-# 腕 × 波の組み合わせを作る（波は累積）
+# アーム × 波の組み合わせを作る（波は累積）
 for spec in "base:w0:none" "naive:w1:naive" "naive:w2:naive" "naive:w3:naive" \
             "classic:w1:classic" "classic:w2:classic" "classic:w3:classic"; do
   track="${spec%%:*}"; rest="${spec#*:}"; wave="${rest%%:*}"; kind="${rest##*:}"
@@ -98,7 +98,7 @@ for spec in "base w0" "naive w1" "naive w2" "naive w3" "classic w1" "classic w2"
   set -- $spec; track="$1"; wave="$2"
   d="$WORK/${track}-${wave}"
   say "------------------------------------------"
-  say "腕: ${track} / 波: ${wave}"
+  say "アーム: ${track} / 波: ${wave}"
   say "------------------------------------------"
   ( cd "$d" && mvn -B -Dmaven.compiler.showDeprecation=true clean test ) > "$d.build.log" 2>&1
   say "終了コード: $?"

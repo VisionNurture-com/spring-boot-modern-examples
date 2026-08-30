@@ -49,7 +49,7 @@ bash scenarios/003-pinning-remaining/run.sh    # 仮想スレッドが手放せ�
 bash scenarios/003-pool-sizing/run.sh          # コネクションプールのサイズを振る
 
 # M3: シナリオを実行する
-bash scenarios/002-startup-3ways/run.sh        # 起動（5 腕）
+bash scenarios/002-startup-3ways/run.sh        # 起動（5 アーム）
 bash scenarios/002-steady-throughput/run.sh    # 定常状態（3 方式 × 負荷 2 種）
 ```
 
@@ -57,8 +57,8 @@ bash scenarios/002-steady-throughput/run.sh    # 定常状態（3 方式 × 負�
 
 | シナリオ | モード | 測るもの |
 |---|:--:|---|
-| `001-migration-3x-to-4x` | M1 | **3.5.16 → 4.1.1 の移行**で、直しては再ビルドする**波ごと**にビルドを止めた箇所（N1）と非推奨警告どまりの箇所（N2）が何件出るか（腕 2 本: 素直に上げる / 公式の classic starters）|
-| `002-startup-3ways` | M3 | 素の JVM / AOT キャッシュ / Native Image の**起動**（5 腕。AOT キャッシュは**展開の有無**で 2 腕に分けている）|
+| `001-migration-3x-to-4x` | M1 | **3.5.16 → 4.1.1 の移行**で、直しては再ビルドする**波ごと**にビルドを止めた箇所（N1）と非推奨警告どまりの箇所（N2）が何件出るか（アーム 2 本: 素直に上げる / 公式の classic starters）|
+| `002-startup-3ways` | M3 | 素の JVM / AOT キャッシュ / Native Image の**起動**（5 アーム。AOT キャッシュは**展開の有無**で 2 アームに分けている）|
 | `002-steady-throughput` | M3 | 同 3 方式の**定常状態**のスループットと p99 |
 | `002-cache-pitfalls` | M1 | AOT キャッシュが効かなくなる 2 経路（**jar の食い違い** / `clean` を挟まない汚染）の出力と時間 |
 | `002-steady-design` | M1 | 定常計測の条件の妥当性（同時実行 / 計算量 / ウォームアップの 3 スイープ・素の JVM のみ）|

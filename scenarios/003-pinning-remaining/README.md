@@ -24,9 +24,9 @@ JAVA25_HOME=/path/to/jdk25 JAVA21_HOME=/path/to/jdk21 bash scenarios/003-pinning
 
 JDK 21 が見つからない場合、対照はスキップして JDK 25 のぶんだけ測ります（該当値は `-1` になります）。
 
-## 腕（3 つ）
+## アーム（3 つ）
 
-| 腕 | 中身 | なぜ置くか |
+| アーム | 中身 | なぜ置くか |
 |---|---|---|
 | `noop` | 待ち合わせるだけで何もしない | **対照**。ハーネス自身が出すイベントを数える |
 | `sync` | `synchronized` ブロックの中で 100 ms ブロックする | JEP 491 が解消したと述べる経路 |
@@ -40,6 +40,6 @@ JDK 21 が見つからない場合、対照はスキップして JDK 25 のぶ�
 
 ## 出力
 
-- `results/003-pinning-remaining/run.log` —— 生ログ（腕ごとの件数・理由の内訳・代表スタック）
+- `results/003-pinning-remaining/run.log` —— 生ログ（アームごとの件数・理由の内訳・代表スタック）
 - `results/003-pinning-remaining/summary.json` —— 実効値
 - `scenarios/003-pinning-remaining/expected.md` —— **記事に載せる値の正本**

@@ -11,7 +11,7 @@
 | モード | M1（JDK 25 + Maven）|
 | 測ったもの | 3.5.16 → 4.1.1 の移行で、**直しては再ビルドする波ごとに**ビルドを止める箇所（N1）と非推奨警告どまりの箇所（N2）が何件出るか |
 | 対象アプリ | `scenarios/001-migration-3x-to-4x/app/`（**ソース 6 ファイル・直接依存 3 個**）|
-| 腕 | **naive**（親の版だけ上げる）と **classic**（公式 §Migration Strategy の `spring-boot-starter-classic` / `-test-classic` を最初から入れる）|
+| アーム | **naive**（親の版だけ上げる）と **classic**（公式 §Migration Strategy の `spring-boot-starter-classic` / `-test-classic` を最初から入れる）|
 | 再現手順 | `bash scenarios/001-migration-3x-to-4x/run.sh` |
 
 ⚠️ **件数はこの題材アプリの構成に強く依存します。**ソース 6 ファイル・直接依存 3 個という規模とセットで読んでください。
@@ -38,7 +38,7 @@
 
 ## 実測
 
-| 腕 / 波 | N1（止まる）| N2（警告どまり）| ビルド | テスト |
+| アーム / 波 | N1（止まる）| N2（警告どまり）| ビルド | テスト |
 |---|---:|---:|:--:|---:|
 | base W0（3.5.16）| 0 | **1** | 緑 | 2 |
 | naive W1 | **4** | 0 | 赤 | 0 |
@@ -52,7 +52,7 @@
 
 ### 壊れた箇所（一意の「ファイル:行」）
 
-| 腕 / 波 | 箇所 |
+| アーム / 波 | 箇所 |
 |---|---|
 | naive W1 | `TaskController.java:22` / `TaskController.java:35` / `TaskController.java:8` / `TaskController.java:9` |
 | naive W2 | `TaskControllerTest.java:25` / `TaskControllerTest.java:31` / `TaskControllerTest.java:7` / `TaskControllerTest.java:8` |

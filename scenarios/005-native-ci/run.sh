@@ -9,7 +9,9 @@
 #   bash scenarios/005-native-ci/run.sh [--rounds N] [--out DIR]
 set -euo pipefail
 
-REPO="orcus-tbpd/native-ci-measure"
+# 測定は PUBLIC リポジトリでしか成立しない（4 vCPU / 16 GB は公開側の標準 runner だけ）。
+# 公開サンプル自身が PUBLIC なので、そこへ同居させた measure.yml / measure-oom.yml を回す。
+REPO="VisionNurture-com/spring-boot-modern-examples"
 ROUNDS=3
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 OUT="$ROOT/results/005-native-ci"
