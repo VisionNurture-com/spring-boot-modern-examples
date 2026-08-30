@@ -6,7 +6,7 @@
 #   移管のたびに使い捨てクローンを作るため、リポジトリローカルの git config が無く、
 #   別の層の identity や個人のメールアドレスのまま commit されやすい。
 #
-#   検出の仕掛けは既にある（read-stuff の audit-public-identity.sh と
+#   検出の仕掛けは既にある（記事側の突合スクリプトと、
 #   .github/workflows/verify.yml の identity ジョブ）。しかし**どちらも push の後**に
 #   しか動かない。公開用は PUBLIC なので、push した時点でメールアドレスは誰でも読める。
 #   2026-08-26 に実際に起きた（CI の identity ジョブは failure を返していたが、
@@ -24,8 +24,7 @@
 #   git config hooks.expected-name  "<この層の名前>"
 #   git config hooks.expected-email "<この層のアドレス>"
 #
-#   公開用のクローンは read-stuff の
-#   blog-tech-biz-plus/system/tools/public-repo-clone.sh が 3 つとも自動で設定する。
+#   公開用のクローンは、検証用リポジトリ側のクローン用スクリプトが 3 つとも自動で設定する。
 
 set -uo pipefail
 

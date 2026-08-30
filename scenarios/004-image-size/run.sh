@@ -46,6 +46,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUT="$ROOT/results/$SCENARIO"
 STARTS=3
 REG_PORT=5001
+REG_PORT_EXPLICIT=0
 REG_NAME="sbme-img-registry"
 REG_IMAGE="registry:3"
 DO_PULL=1
@@ -91,7 +92,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --out) OUT="$2"; shift 2 ;;
     --starts) STARTS="$2"; shift 2 ;;
-    --port) REG_PORT="$2"; shift 2 ;;
+    --port) REG_PORT="$2"; REG_PORT_EXPLICIT=1; shift 2 ;;
     --skip-pull) DO_PULL=0; shift ;;
     --allow-base-removal) ALLOW_BASE_RM=1; shift ;;
     *) echo "不明な引数: $1" >&2; exit 3 ;;
@@ -99,6 +100,26 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p "$OUT"
+# ホストのポートは既定では実行時に空きを選ぶ（決め打ちだと、その番号が埋まっている
+# 機体で docker run が daemon のエラーで落ちる）。空いていれば 5001 のままになる。
+# --port で明示されたときは選び直さず、埋まっていれば理由を出して止まる。
+if [ "$REG_PORT_EXPLICIT" -eq 1 ]; then
+  python3 - "$REG_PORT" <<'PYPORT' || { echo "指定されたポート ${REG_PORT} は使用中です" >&2; exit 3; }
+import socket, sys
+s = socket.socket()
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+try:
+    s.bind(("127.0.0.1", int(sys.argv[1])))
+except OSError:
+    sys.exit(1)
+finally:
+    s.close()
+PYPORT
+else
+  REG_PORT="$(python3 "$ROOT/tools/free-port.py" "$REG_PORT")" || {
+    echo "ローカルレジストリ用の空きポートを確保できません" >&2; exit 3; }
+fi
+
 LOG="$OUT/run.log"
 # 出力先はリポジトリからの相対で見せる（生ログに実行環境の絶対パスを残さない）
 rel() { case "$1" in "$ROOT"/*) printf '%s' "${1#"$ROOT"/}" ;; *) printf '%s' "$1" ;; esac; }

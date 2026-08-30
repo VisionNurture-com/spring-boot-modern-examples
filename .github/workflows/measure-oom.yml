@@ -1,0 +1,53 @@
+name: measure-oom
+
+# 落ちる腕だけを取り直すためのワークフロー。
+# 🔴 measure.yml の同じ腕は、GitHub Actions の既定シェルが `bash -e` であるため
+#    `mvn` が非ゼロで終わった時点でステップごと中断し、集計に到達しなかった。
+#    ここでは `set +e` で明示的に外してから終了コードを拾う。
+on:
+  workflow_dispatch:
+
+env:
+  # 測定対象は既存の app モジュール（測定専用のモジュールは増やさない）。
+  # 判定は artifactId 由来のパスで行う。finalName は jar にしか効かない。
+  BINARY: app/target/app
+
+jobs:
+  native-xmx-limited:
+    name: Native ビルド（ヒープ上限を 2g に絞る）
+    runs-on: ubuntu-latest
+    # ラウンド 0 は 7 分 16 秒、ラウンド 1 は 20 分 08 秒で落ちた。
+    # 振れ幅が大きいため、実測最長の 2 倍以上として 45 分を置く（work-rules §11.2）。
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 上限を絞って native ビルドを試す
+        env:
+          NATIVE_IMAGE_OPTIONS: -H:BuildOutputJSONFile=${{ github.workspace }}/out/build-output.json
+        run: |
+          set -o pipefail
+          mkdir -p out
+          start=$(date +%s.%N)
+          set +e
+          mvn -B -Pnative -pl app package native:compile-no-fork -DskipTests -Dxmx=2g 2>&1 | tee out/native-build.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          end=$(date +%s.%N)
+          python3 tools/collect.py native-xmx-limited "$(echo "$end - $start" | bc)" "$rc" out/build-output.json "$BINARY" > out/native-xmx-limited.json
+          # 落ち方を機械可読にして残す。件数 0 でもステップを落とさない。
+          {
+            echo "oom_lines=$(grep -c 'OutOfMemoryError' out/native-build.log || true)"
+            echo "terminating_lines=$(grep -c 'Terminating due to' out/native-build.log || true)"
+            echo "build_failure_lines=$(grep -c 'BUILD FAILURE' out/native-build.log || true)"
+          } > out/failure-signals.txt
+          cat out/native-xmx-limited.json out/failure-signals.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-xmx-limited
+          path: out/

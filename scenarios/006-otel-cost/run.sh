@@ -42,7 +42,12 @@ APP_N=2000
 DB_N=20000
 ARMS_FILTER=""
 PORT=18120
-PG_PORT=55432
+# ホストのポートは実行時に空きを選ぶ（決め打ちだと、その番号が埋まっている機体で
+# docker run が daemon のエラーで落ちる。2026-08-30 に CI で 55432 が埋まって落ちた）。
+PG_PORT="$(python3 "$ROOT/tools/free-port.py" 55432)" || {
+  echo "PostgreSQL 用の空きポートを確保できません" >&2; exit 3; }
+OTLP_PORT="$(python3 "$ROOT/tools/free-port.py" 4318)" || {
+  echo "OTLP コレクタ用の空きポートを確保できません" >&2; exit 3; }
 PG_IMAGE="postgres:18.6"
 COL_IMAGE="otel/opentelemetry-collector:0.159.0"
 PG_NAME="pg-006"
@@ -80,13 +85,16 @@ LOG="$OUT/run.log"
 if [ "$PHASE" = "all" ] || [ "$PHASE" = "build" ]; then : > "$LOG"; fi
 log() { echo "$@" | tee -a "$LOG"; }
 
+# 使ったホストのポートを残す（空きが取れなかった回と取れた回を後から見分けるため）
+log "ホストポート: PostgreSQL=${PG_PORT} / OTLP コレクタ=${OTLP_PORT}"
+
 APP_PID=""
 cleanup() {
   [ -n "$APP_PID" ] && kill "$APP_PID" 2>/dev/null || true
 }
 trap cleanup EXIT
 
-OTLP_ENDPOINT="http://localhost:4318/v1/traces"
+OTLP_ENDPOINT="http://localhost:${OTLP_PORT}/v1/traces"
 OTLP_ARGS=( -Dmanagement.opentelemetry.tracing.export.otlp.endpoint="$OTLP_ENDPOINT"
             -Dmanagement.otlp.metrics.export.enabled=false )
 
@@ -112,7 +120,7 @@ is_db()    { case "$1" in appdb-*) return 0 ;; *) return 1 ;; esac; }
 
 start_collector() {  # $1 = count|nop
   docker rm -f "$COL_NAME" >/dev/null 2>&1 || true
-  docker run -d --name "$COL_NAME" -p 4318:4318 \
+  docker run -d --name "$COL_NAME" -p "${OTLP_PORT}:4318" \
     -v "$HERE/collector-$1.yaml:/etc/otelcol/config.yaml:ro" \
     "$COL_IMAGE" --config /etc/otelcol/config.yaml >/dev/null
   for _ in $(seq 1 40); do

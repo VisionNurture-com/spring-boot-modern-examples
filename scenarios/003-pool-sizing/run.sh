@@ -38,7 +38,10 @@ DB_CPU_N=100000
 POOLS=(2 4 8 16 32 64)
 PG_IMAGE="postgres:18.6"
 PG_NAME="sbme-pool-pg"
-PG_PORT=55432
+# ホストのポートは実行時に空きを選ぶ（決め打ちだと、その番号が埋まっている機体で
+# docker run が daemon のエラーで落ちる）。空いていれば 55432 のままになる。
+PG_PORT="$(python3 "$ROOT/tools/free-port.py" 55432)" || {
+  echo "PostgreSQL 用の空きポートを確保できません" >&2; exit 3; }
 APP_PORT=8080
 
 # JDK の場所は次の順で決める。
@@ -80,6 +83,9 @@ rel() { case "$1" in "$ROOT"/*) printf '%s' "${1#"$ROOT"/}" ;; *) printf '%s' "$
 
 : > "${LOG}"
 log() { echo "$@" | tee -a "${LOG}"; }
+
+# 使ったホストのポートを残す（空きが取れなかった回と取れた回を後から見分けるため）
+log "PostgreSQL のホストポート: ${PG_PORT}"
 
 command -v docker >/dev/null 2>&1 || { echo "docker が見つかりません" >&2; exit 3; }
 [ -x "${JAVA25_HOME}/bin/java" ] || { echo "JDK 25 が見つかりません: ${JAVA25_HOME}" >&2; exit 3; }

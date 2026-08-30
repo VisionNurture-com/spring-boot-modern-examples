@@ -29,4 +29,54 @@
     <module>app-otelcost</module>
     <module>app-db-otelcost</module>
   </modules>
+
+  <!-- 🔴 プロファイルは親（本 pom）に置く。モジュール側の pom へ足すと、たとえ
+       有効化されない profile でも META-INF/maven に埋め込まれる pom が変わり、
+       app.jar のバイト数が動いて 002 / 004 の掲載値が再現しなくなる。
+       親の pom はモジュールの jar に埋め込まれないため、ここなら影響しない
+       （2026-08-30 に app.jar 21,983,846 バイトが前後で不変であることを実測）。 -->
+  <profiles>
+    <!-- native-image のビルドプロセスのヒープ上限を絞る。
+         十分なメモリがある runner で、あえて OutOfMemory を再現するために使う。 -->
+    <profile>
+      <id>xmx-limited</id>
+      <activation>
+        <property><name>xmx</name></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <configuration>
+              <buildArgs>
+                <buildArg>-J-Xmx${xmx}</buildArg>
+              </buildArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- native-image 自身のビルドレポートを出させる。 -->
+    <profile>
+      <id>build-report</id>
+      <activation>
+        <property><name>emitReport</name></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <configuration>
+              <buildArgs>
+                <buildArg>--emit build-report</buildArg>
+              </buildArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

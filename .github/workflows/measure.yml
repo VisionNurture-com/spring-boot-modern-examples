@@ -1,0 +1,210 @@
+name: measure
+
+on:
+  workflow_dispatch:
+
+# 1 回の実行が 1 ラウンド。中央値を出すためにワークフローを 3 回まわす。
+env:
+  # 測定対象は既存の app モジュール（測定専用のモジュールは増やさない）。
+  # 判定は artifactId 由来のパスで行う。finalName は jar にしか効かない。
+  BINARY: app/target/app
+
+jobs:
+  probe:
+    name: runner の実体と GraalVM の解決版を記録する
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: runner の資源と環境変数を出す
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          {
+            echo "nproc=$(nproc)"
+            echo "mem_total_kb=$(awk '/MemTotal/{print $2}' /proc/meminfo)"
+            echo "mem_available_kb=$(awk '/MemAvailable/{print $2}' /proc/meminfo)"
+            echo "disk_avail_kb=$(df -Pk / | awk 'NR==2{print $4}')"
+            echo "ci_env=${CI:-unset}"
+            echo "runner_os=${ImageOS:-unknown}"
+            echo "runner_version=${ImageVersion:-unknown}"
+          } | tee out/probe.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe
+          path: out/
+
+  graalvm-version-probe:
+    name: setup-graalvm の版指定で何が入るかを確かめる
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: java-version-25
+            java_version: '25'
+            version: ''
+          - label: version-25.3
+            java_version: ''
+            version: '25.3'
+    steps:
+      - uses: graalvm/setup-graalvm@v1
+        continue-on-error: true
+        id: setup
+        with:
+          java-version: ${{ matrix.java_version }}
+          version: ${{ matrix.version }}
+          distribution: 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 入った版を記録する
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          {
+            echo "label=${{ matrix.label }}"
+            echo "setup_outcome=${{ steps.setup.outcome }}"
+            echo "native_image_version=$(native-image --version 2>&1 | head -1 || echo unavailable)"
+            echo "java_home=${JAVA_HOME:-unset}"
+          } | tee out/graalvm-${{ matrix.label }}.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: graalvm-probe-${{ matrix.label }}
+          path: out/
+
+  jvm-package:
+    name: 対照 JVM ビルド
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: mvn package の所要を測る
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          start=$(date +%s.%N)
+          mvn -B -pl app -am package -DskipTests 2>&1 | tee out/jvm-build.log
+          end=$(date +%s.%N)
+          {
+            echo "jvm_wall_sec=$(echo "$end - $start" | bc)"
+            echo "jar_bytes=$(stat -c%s app/target/app.jar)"
+          } | tee out/jvm.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jvm-package
+          path: out/
+
+  native-nocache:
+    name: Native ビルド（Maven キャッシュなし）
+    runs-on: ubuntu-latest
+    # 🔴 暫定値。ラウンド 1 の実測は最長 7 分 16 秒（上限を絞った腕）。
+    #    3 ラウンドの実測が出たら work-rules §11.2（余裕率 2 倍以上）で決め直す。
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 版を記録する
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          { java -version; native-image --version; mvn -v; } 2>&1 | tee out/versions.txt
+      - name: package だけで native バイナリができるかを確かめる
+        # 正典（Native Build Tools）は `./mvnw -Pnative package` と書くが、
+        # spring-boot-starter-parent 4.1.1 の native プロファイルが束縛するのは
+        # add-reachability-metadata だけである。ここでその帰結を実測する。
+        # 🔴 判定は artifactId 由来のパス（app/target/app）で行う。
+        #    finalName は jar にしか効かない（ラウンド 1 でここを取り違えた）。
+        run: |
+          set -euo pipefail
+          mvn -B -Pnative -pl app package -DskipTests 2>&1 | tee out/package-only.log
+          if [ -f "$BINARY" ]; then echo "package_only_binary=yes"; else echo "package_only_binary=no"; fi | tee out/package-only.txt
+          find app/target -maxdepth 1 -type f -printf '%s\t%p\n' | sort -rn | tee -a out/package-only.txt
+          rm -f "$BINARY"
+      - name: native ビルドを測る
+        env:
+          # setup-graalvm の native-image-job-reports と同じ機構。
+          # 値の出所を機械可読な JSON に固定する。
+          NATIVE_IMAGE_OPTIONS: -H:BuildOutputJSONFile=${{ github.workspace }}/out/build-output.json
+        run: |
+          set -uo pipefail
+          start=$(date +%s.%N)
+          mvn -B -Pnative -pl app package native:compile-no-fork -DskipTests 2>&1 | tee out/native-build.log
+          rc=${PIPESTATUS[0]}
+          end=$(date +%s.%N)
+          python3 tools/collect.py native-nocache "$(echo "$end - $start" | bc)" "$rc" out/build-output.json "$BINARY" | tee out/native-nocache.json
+          exit "$rc"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-nocache
+          path: out/
+
+  native-cache:
+    name: Native ビルド（Maven キャッシュあり）
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm-community'
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: native ビルドを測る
+        env:
+          NATIVE_IMAGE_OPTIONS: -H:BuildOutputJSONFile=${{ github.workspace }}/out/build-output.json
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          start=$(date +%s.%N)
+          mvn -B -Pnative -pl app package native:compile-no-fork -DskipTests 2>&1 | tee out/native-build.log
+          rc=${PIPESTATUS[0]}
+          end=$(date +%s.%N)
+          python3 tools/collect.py native-cache "$(echo "$end - $start" | bc)" "$rc" out/build-output.json "$BINARY" | tee out/native-cache.json
+          exit "$rc"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-cache
+          path: out/
+
+  native-xmx-limited:
+    name: Native ビルド（ヒープ上限を 2g に絞る）
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm-community'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: 上限を絞って native ビルドを試す
+        # 落ちることを確かめる腕。失敗が期待値なので終了コードで job を落とさない。
+        env:
+          NATIVE_IMAGE_OPTIONS: -H:BuildOutputJSONFile=${{ github.workspace }}/out/build-output.json
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          start=$(date +%s.%N)
+          mvn -B -Pnative -pl app package native:compile-no-fork -DskipTests -Dxmx=2g 2>&1 | tee out/native-build.log
+          rc=${PIPESTATUS[0]}
+          end=$(date +%s.%N)
+          python3 tools/collect.py native-xmx-limited "$(echo "$end - $start" | bc)" "$rc" out/build-output.json "$BINARY" | tee out/native-xmx-limited.json
+          grep -c "OutOfMemoryError" out/native-build.log | sed 's/^/oom_lines=/' | tee -a out/native-xmx-limited.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-xmx-limited
+          path: out/
