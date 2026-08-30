@@ -32,7 +32,10 @@ def sanitize(text, user, home):
         text, c = re.subn(re.escape(home), replacement, text)
         n += c
     if user:
-        text, c = re.subn(r"(?<![A-Za-z0-9._-])%s(?![A-Za-z0-9._-])" % re.escape(user),
+        # 🔴 ハイフンは境界に含める。`-Users-<user>-work-...` のようにハイフンで挟まれた形は
+        #    ホーム形のパス（/Users/<user>）とは別経路で出てくるため、ここで落とさないと残る
+        #    （2026-08-30 に clean clone の実走で検出。出力先をリポジトリ外へ指定したときに出た）。
+        text, c = re.subn(r"(?<![A-Za-z0-9._])%s(?![A-Za-z0-9._])" % re.escape(user),
                           PLACEHOLDER, text)
         n += c
     return text, n
