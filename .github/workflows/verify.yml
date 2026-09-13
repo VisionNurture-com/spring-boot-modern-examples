@@ -228,5 +228,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: m2-otel-cost-results
-          path: tmp-results/
+          # 🔴 jar を含めない。以前は tmp-results/ を丸ごと上げており、
+          #    work/ のビルド成果物 4 本だけで 1 件 92 MiB になっていた（計測結果そのものは約 100 KiB）。
+          path: |
+            tmp-results/
+            !tmp-results/**/*.jar
           if-no-files-found: warn
