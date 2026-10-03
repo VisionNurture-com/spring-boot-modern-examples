@@ -61,6 +61,9 @@ def main() -> int:
         have = {l["digest"] for l in base.get("layers", [])}
         delta = sum(l["size"] for l in layers if l["digest"] not in have)
         print(delta, sum(l["size"] for l in layers))
+    elif mode == "unique":
+        # docker pull は同じ中身の層（空の層など）を 1 行にまとめて表示するため、重複を除いた数を返す
+        print(len({l["digest"] for l in layers}))
     else:
         raise SystemExit(f"🔴 未知のモード: {mode}")
     return 0

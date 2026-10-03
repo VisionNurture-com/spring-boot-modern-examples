@@ -20,6 +20,11 @@
 #      containerd image store のみ）。数を出すときは必ずどの数かを名前に書く。
 #   3) 2 回目の pull を測るときは、対照（1 層も持たない状態）を作ってから測る。
 #      持ったまま測ると 0 秒になり、それが速さなのか命中なのか判別できない。
+#      🔴 イメージと土台を消しても、docker build が取り込んだ層は**ビルドのキャッシュが持ち続ける**
+#      （containerd image store では同じ層を共有する）。そのためビルドは専用の buildx ビルダー
+#      （docker-container ドライバ）で行い、キャッシュを手元の image store から切り離す。
+#      さらに pull は -q を付けずに打ち、Already exists の層を数える。1 層でも残っていれば
+#      その回の秒数は「空からの pull」ではないため status を partial にする。
 #   4) 単一アーキで揃える。AOT キャッシュはビルド機のアーキに依存するため、
 #      クロスビルドを混ぜると起動時間の比較が壊れる。
 #   5) 効かない条件だけでなく効く条件も測れる形にする（土台を 3 種振る）。
@@ -148,6 +153,9 @@ CTX="$WORK/ctx"
 mkdir -p "$CTX"
 cleanup() {
   docker rm -f "$REG_NAME" >/dev/null 2>&1
+  docker buildx rm "${BUILDER:-sbme004-builder}" >/dev/null 2>&1
+  # BuildKit のイメージは、本スクリプトが入れたときだけ消す
+  [ "${BUILDKIT_PRE:-1}" = "0" ] && docker image rm "${BUILDKIT_IMAGE}" >/dev/null 2>&1
   rm -rf "$WORK"
   keep_failed_log
 }
@@ -246,6 +254,24 @@ curl -fs "http://localhost:${REG_PORT}/v2/" >/dev/null 2>&1 \
   || { log "🔴 レジストリが応答しません"; exit 1; }
 log "  起動しました: $REG_DIGEST"
 
+# ---- 3b. 専用のビルダーを立てる ----------------------------------------------
+# 既定のビルダーで作ると、その層がビルドのキャッシュに残り、7 の「何も持っていない状態」を
+# 作れない。専用ビルダーのキャッシュはビルダーのコンテナの中にあり、終わったらビルダーごと消す。
+# 読者の既定のビルダーとそのキャッシュには触れない。
+BUILDER="sbme004-builder"
+BUILDKIT_IMAGE="moby/buildkit:v0.33.0"   # Docker 29.8 に同梱の BuildKit と同じ版
+BUILDKIT_PRE=0
+docker image inspect "$BUILDKIT_IMAGE" >/dev/null 2>&1 && BUILDKIT_PRE=1
+log ""
+log "--- 専用のビルダー（${BUILDKIT_IMAGE}）---"
+docker buildx rm "$BUILDER" >/dev/null 2>&1
+# ビルダーの詳細（ワーカーのホスト名・GC の設定など）は生ログに残さず、BuildKit の版だけを記録する
+BK_INSPECT="$WORK/buildx-inspect.txt"
+docker buildx create --name "$BUILDER" --driver docker-container --driver-opt "image=${BUILDKIT_IMAGE}" >/dev/null 2>"$BK_INSPECT" \
+  && docker buildx inspect --bootstrap "$BUILDER" > "$BK_INSPECT" 2>&1 \
+  || { cat "$BK_INSPECT" >> "$LOG"; log "🔴 専用のビルダーを作れません"; exit 1; }
+log "  作りました: ${BUILDER}（$(grep -m1 'BuildKit version' "$BK_INSPECT" | sed 's/  */ /g')）"
+
 # ---- 4. 9 イメージを作って押す ----------------------------------------------
 MEAS="$WORK/measures.txt"
 : > "$MEAS"
@@ -315,7 +341,7 @@ for w in "${WRAPS[@]}"; do
     log ""
     log "[${w}-${b}] $(wrap_label "$w") / ${bi}"
     T0=$(python3 -c 'import time;print(time.perf_counter())')
-    ( cd "$CTX" && docker build -q -t "$tag" -f Dockerfile . ) >> "$LOG" 2>&1
+    ( cd "$CTX" && docker buildx build --builder "$BUILDER" --load -q -t "$tag" -f Dockerfile . ) >> "$LOG" 2>&1
     RC=$?
     T1=$(python3 -c 'import time;print(time.perf_counter())')
     BUILD_S=$(python3 -c "print(round($T1-$T0,1))")
@@ -399,7 +425,7 @@ for w in "${WRAPS[@]}"; do
   repo="measure/${w}-b1"
   grep -q "^${w}|b1|.*|OK$" "$MEAS" || { echo "${w}|-1|-1" >> "$INC_FILE"; continue; }
   mk_dockerfile "$w" "$bi" "app-v2.jar" > "$CTX/Dockerfile"
-  ( cd "$CTX" && docker build -q -t "sbme004-${w}-b1:v2" -f Dockerfile . ) >> "$LOG" 2>&1 || {
+  ( cd "$CTX" && docker buildx build --builder "$BUILDER" --load -q -t "sbme004-${w}-b1:v2" -f Dockerfile . ) >> "$LOG" 2>&1 || {
     log "  🔴 [${w}] v2 のビルドに失敗しました"; echo "${w}|-1|-1" >> "$INC_FILE"; continue; }
   docker tag "sbme004-${w}-b1:v2" "localhost:${REG_PORT}/${repo}:v2"
   docker push -q "localhost:${REG_PORT}/${repo}:v2" >> "$LOG" 2>&1 || {
@@ -417,36 +443,69 @@ if [ "$DO_PULL" = "1" ]; then
   log ""
   log "--- 何も持っていない状態から pull する（対照つき）---"
   log "🔴 消すのは本スクリプトが導入したイメージだけです。実行前から手元にあった土台には触れません。"
+  # ビルドはここまでで終わっている。専用ビルダーとその BuildKit のイメージ（alpine 製）を先に片付ける。
+  # 残すと BuildKit のイメージが alpine の層を共有し、b3 の取り直しで、その層が流れなくなる。
+  docker buildx rm "$BUILDER" >/dev/null 2>&1
+  [ "$BUILDKIT_PRE" = "0" ] && docker image rm "$BUILDKIT_IMAGE" >/dev/null 2>&1
+  # 先に、すべての土台の自作イメージを消す。アプリ側の層（依存・ローダー・アプリ）は土台が違っても
+  # 同じ中身になるため、別の土台のイメージが残っていると、その層が流れず「空からの pull」にならない。
+  for b in "${BASES[@]}"; do
+    for w in "${WRAPS[@]}"; do
+      docker image rm -f "sbme004-${w}-${b}:v1" "localhost:${REG_PORT}/measure/${w}-${b}:v1" >/dev/null 2>&1
+    done
+  done
+  for w in "${WRAPS[@]}"; do
+    docker image rm -f "sbme004-${w}-b1:v2" "localhost:${REG_PORT}/measure/${w}-b1:v2" >/dev/null 2>&1
+  done
   for b in "${BASES[@]}"; do
     line=$(grep "^w2|${b}|" "$MEAS")
-    [ -n "$line" ] && [ "${line##*|}" = "OK" ] || { echo "${b}|-1|skip" >> "$PULL_FILE"; continue; }
+    [ -n "$line" ] && [ "${line##*|}" = "OK" ] || { echo "${b}|-1|skip|-1|-1|-1" >> "$PULL_FILE"; continue; }
     PRE=$(grep "^${b}|" "$BASE_INFO" | awk -F'|' '{print $5}')
     if [ "$PRE" = "1" ] && [ "$ALLOW_BASE_RM" != "1" ]; then
       log "  [${b}] ⏸ 未測定 —— 土台が実行前から手元にあり、消せないため対照を作れません"
       log "        （本シリーズの作業で入れた土台だと確認できるなら --allow-base-removal を付ける）"
-      echo "${b}|-1|preexisting" >> "$PULL_FILE"
+      echo "${b}|-1|preexisting|-1|-1|-1" >> "$PULL_FILE"
       continue
     fi
     repo="measure/w2-${b}"
     bi="$(base_image "$b")"
-    # 我々が作ったものと、我々が導入した土台だけを消す
-    for w in "${WRAPS[@]}"; do
-      docker image rm -f "sbme004-${w}-${b}:v1" "localhost:${REG_PORT}/measure/${w}-${b}:v1" >/dev/null 2>&1
-      docker image rm -f "sbme004-${w}-b1:v2" "localhost:${REG_PORT}/measure/${w}-b1:v2" >/dev/null 2>&1
-    done
+    # 我々が導入した土台を消す（自作イメージは上で消してある）
     docker image rm -f "$bi" >/dev/null 2>&1
+    PULL_OUT="$WORK/pull-${b}.txt"
+    # manifest の層の数（重複を除く）。pull の表示も同じ中身の層を 1 行にまとめるため
+    NLAYERS=$(python3 "$ROOT/scenarios/004-image-size/manifest.py" "${REG_PORT}" "$repo" v1 unique)
     T0=$(python3 -c 'import time;print(time.perf_counter())')
-    docker pull -q "localhost:${REG_PORT}/${repo}:v1" >> "$LOG" 2>&1
+    docker pull "localhost:${REG_PORT}/${repo}:v1" > "$PULL_OUT" 2>&1
     rc=$?
     T1=$(python3 -c 'import time;print(time.perf_counter())')
     S=$(python3 -c "print(round($T1-$T0,3))")
+    cat "$PULL_OUT" >> "$LOG"
+    # 取り直したイメージは、次の土台の取り直しと層を共有するため、すぐに消す
+    docker image rm -f "localhost:${REG_PORT}/${repo}:v1" >/dev/null 2>&1
+    # 手元に残っていて流れなかった層（Already exists）と、流れた層（Pull complete）を層の ID で数える
+    # 4f4fb700ef54 は中身のない層（32 バイト・WORKDIR などで生じる）で、多くのイメージが共有しているため数えない
+    REUSED=$(grep -E '^[0-9a-f]{12}: Already exists' "$PULL_OUT" | grep -v '^4f4fb700ef54:' | cut -d: -f1 | sort -u | wc -l | tr -d ' ')
+    PULLED=$(grep -E '^[0-9a-f]{12}: Pull complete' "$PULL_OUT" | cut -d: -f1 | sort -u | wc -l | tr -d ' ')
+    # 中身のない層が手元にあって Pull complete の行が出なかったときだけ、流れた層として数え合わせる
+    if grep -q '^4f4fb700ef54: Already exists' "$PULL_OUT" && ! grep -q '^4f4fb700ef54: Pull complete' "$PULL_OUT"; then
+      PULLED=$((PULLED + 1))
+    fi
     if [ $rc -ne 0 ]; then
       log "  [${b}] 🔴 pull に失敗しました"
-      echo "${b}|-1|failed" >> "$PULL_FILE"
+      echo "${b}|-1|failed|-1|-1|-1" >> "$PULL_FILE"
+    elif [ "$REUSED" != "0" ] || [ "$PULLED" != "$NLAYERS" ]; then
+      # 手元に丸ごと残っている層は、Docker Desktop では Already exists の行すら出ないことがある。
+      # そのため「流れた層の数 = manifest の層の数」のときだけ空からの pull と認める。
+      log "  [${b}] ${S}s（⚠️ 流れた層 ${PULLED} / manifest の層 ${NLAYERS}・手元に残っていた層 ${REUSED}・空からの pull ではない）"
+      echo "${b}|${S}|partial|${REUSED}|${PULLED}|${NLAYERS}" >> "$PULL_FILE"
     else
-      log "  [${b}] ${S}s（localhost 経由・**この秒数を主張の根拠にしない**）"
-      echo "${b}|${S}|ok" >> "$PULL_FILE"
+      log "  [${b}] ${S}s（流れた層 ${PULLED} / manifest の層 ${NLAYERS}・空からの pull・localhost 経由）"
+      echo "${b}|${S}|ok|${REUSED}|${PULLED}|${NLAYERS}" >> "$PULL_FILE"
     fi
+  done
+  # 取り直したイメージも本スクリプトが入れたものなので、残さずに消す
+  for b in "${BASES[@]}"; do
+    docker image rm -f "localhost:${REG_PORT}/measure/w2-${b}:v1" >/dev/null 2>&1
   done
 else
   log ""
@@ -497,9 +556,12 @@ for w, d, t in rows(incf):
     vals[f"{w}_b1_repull_delta_bytes"] = int(d)
     vals[f"{w}_b1_v2_total_bytes"] = int(t)
 
-for b, s, st in rows(pullf):
+for b, s, st, reused, pulled, unique in rows(pullf):
     vals[f"pull_w2_{b}_s"] = float(s)
     vals[f"pull_w2_{b}_status"] = st
+    vals[f"pull_w2_{b}_reused_layers"] = int(reused)
+    vals[f"pull_w2_{b}_pulled_layers"] = int(pulled)
+    vals[f"pull_w2_{b}_unique_layers"] = int(unique)   # manifest の層（同じ中身の層を 1 つと数える）
 
 ok = [(f"{w}_{b}", int(c)) for w, b, bi, c, u, e, l, bd, st in rows(meas) if st == "OK"]
 if ok:
