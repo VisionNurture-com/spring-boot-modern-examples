@@ -110,7 +110,7 @@ import socket, sys
 s = socket.socket()
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 try:
-    s.bind(("127.0.0.1", int(sys.argv[1])))
+    s.bind(("0.0.0.0", int(sys.argv[1])))   # tools/free-port.py と同じ理由で 0.0.0.0 を見る
 except OSError:
     sys.exit(1)
 finally:
@@ -121,12 +121,23 @@ else
     echo "ローカルレジストリ用の空きポートを確保できません" >&2; exit 3; }
 fi
 
-LOG="$OUT/run.log"
+LOG_FINAL="$OUT/run.log"
+# 最後まで通るまでは別名に書き、通ったときだけ run.log を置き換える。
+# 途中で止まった回が、前回の生ログ（expected.md の値の出どころ）を消さないようにするため。
+LOG="$OUT/run.log.partial"
 # 出力先はリポジトリからの相対で見せる（生ログに実行環境の絶対パスを残さない）
 rel() { case "$1" in "$ROOT"/*) printf '%s' "${1#"$ROOT"/}" ;; *) printf '%s' "$1" ;; esac; }
 
 : > "$LOG"
 log() { echo "$@" | tee -a "$LOG"; }
+# 途中で止まったら、この回の生ログを run.failed.log へ移して知らせる（run.log は前回のまま）
+keep_failed_log() {
+  if [ -f "$LOG" ]; then
+    mv "$LOG" "$OUT/run.failed.log"
+    echo "🔴 途中で止まりました。この回の生ログ: $(rel "$OUT/run.failed.log")（$(rel "$LOG_FINAL") は前回のまま）" >&2
+  fi
+}
+trap keep_failed_log EXIT
 
 command -v docker >/dev/null 2>&1 || { echo "docker が見つかりません" >&2; exit 3; }
 docker info >/dev/null 2>&1 || { echo "docker デーモンに接続できません" >&2; exit 3; }
@@ -138,6 +149,7 @@ mkdir -p "$CTX"
 cleanup() {
   docker rm -f "$REG_NAME" >/dev/null 2>&1
   rm -rf "$WORK"
+  keep_failed_log
 }
 trap cleanup EXIT
 
@@ -532,10 +544,12 @@ print(f"最大 / 最小 = {vals.get('largest_over_smallest_ratio')} 倍")
 PYEOF
 
 log ""
-log "生ログ: $(rel "${LOG}")"
+log "生ログ: $(rel "${LOG_FINAL}")"
 log "実効値: $(rel "${OUT}/summary.json")"
 log "終了: $(date '+%Y-%m-%d %H:%M:%S')"
 
 # 子プロセス（Maven / JVM / Docker）の出力は上の echo を直しても生ログに入るため、
 # 書き終えたところで実行環境に固有の情報を落とす（tools/check-neutrality.py が検査する）
+mv "$LOG" "$LOG_FINAL"
+rm -f "$OUT/run.failed.log"
 python3 "$ROOT/tools/sanitize-log.py" "$OUT"

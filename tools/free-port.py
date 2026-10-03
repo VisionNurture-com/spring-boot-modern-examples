@@ -22,10 +22,13 @@ import sys
 
 
 def is_free(port):
+    # 0.0.0.0 で確かめる。docker run -p はすべてのアドレス（0.0.0.0）に束ねるため、
+    # 127.0.0.1 だけを見ると、macOS では SO_REUSEADDR を付けた bind が使用中のポートでも通り、
+    # 埋まっている番号を空きと判定してしまう（Linux では同じ書き方でも拒否される）。
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            s.bind(("127.0.0.1", port))
+            s.bind(("0.0.0.0", port))
         except OSError:
             return False
     return True
@@ -33,7 +36,7 @@ def is_free(port):
 
 def any_free():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(("127.0.0.1", 0))
+        s.bind(("0.0.0.0", 0))
         return s.getsockname()[1]
 
 

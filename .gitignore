@@ -7,6 +7,9 @@ target/
 
 # 計測の中間生成物（jar・一時ログ）。provenance に要るのは run.log / measurements / spans / summary.json だけ。
 results/*/work/
+# 途中の生ログと、途中で止まった回の生ログ（run.log は最後まで通った回だけが置き換える）
+results/*/run.log.partial
+results/*/run.failed.log
 
 # python の実行時に出るキャッシュ
 __pycache__/
