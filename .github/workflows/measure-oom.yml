@@ -17,7 +17,7 @@ jobs:
     name: Native ビルド（ヒープ上限を 2g に絞る）
     runs-on: ubuntu-latest
     # ラウンド 0 は 7 分 16 秒、ラウンド 1 は 20 分 08 秒で落ちた。
-    # 振れ幅が大きいため、実測最長の 2 倍以上として 45 分を置く（work-rules §11.2）。
+    # 振れ幅が大きいため、実測最長の 2 倍以上を目安に 45 分を置く。
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5

@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     # 🔴 m1-smoke へ相乗りさせず独立させている。本シナリオは Maven ビルドを 7 回
     #    （アーム 2 × 波 3 + 基準 1）回すため、m1-smoke（実測最長 7 分 03 秒）へ足すと
-    #    余裕率が work-rules §11.2 の基準 2 倍を割る。独立させれば双方の余裕が保てる。
+    #    制限時間 20 分が実測最長の 2 倍を下回る。独立させれば双方の余裕が保てる。
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
