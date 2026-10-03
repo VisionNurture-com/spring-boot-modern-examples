@@ -12,9 +12,10 @@
 #      - registry_bytes  : レジストリの層 + config の合計（= pull で転送されるバイト数・gzip 済み）
 #      - inspect_bytes   : docker image inspect の .Size
 #      - expanded_bytes  : docker export した rootfs の tar のバイト数（= 実際に展開される中身）
-#      🔴 **この環境（containerd image store）では inspect_bytes は圧縮後にほぼ一致する。**
-#      実測: eclipse-temurin:25-jre は inspect 114,740,584 / Docker Hub の圧縮後 116,800,846 /
-#      export 360,823,296（inspect の 3.14 倍）。docker save も 119,612,928 で圧縮側だった。
+#      🔴 **inspect_bytes の意味は image store と Docker の版で変わる。**containerd image store では
+#      Docker 29.7.2 まで圧縮後にほぼ一致したが（2026-08-29 実測: eclipse-temurin:25-jre は inspect
+#      114,740,584 / export 360,823,296）、29.8.0 で unpacked snapshot usage を含むよう直され
+#      （moby/moby#53426）、29.8.1 では展開後より大きい値を返す（2026-10-03 実測）。
 #      ⚠️ 旧来の graph driver（overlay2）では .Size は展開後を指す。**未検証**（本測定では
 #      containerd image store のみ）。数を出すときは必ずどの数かを名前に書く。
 #   3) 2 回目の pull を測るときは、対照（1 層も持たない状態）を作ってから測る。
@@ -179,6 +180,26 @@ for b in "${BASES[@]}"; do
   img="$(base_image "$b")"
   PRE=1
   docker image inspect "$img" >/dev/null 2>&1 || PRE=0
+  # 🔴 実行前から手元にある土台は、タグの現在値より古いことがある（2026-10-03 に実際に起きた:
+  #    7 日前に取得した eclipse-temurin:25-jre を測り、タグはその後に新しい中身へ進んでいた）。
+  #    古い土台を測ると、転送量も起動も「いまタグで引く読者の値」にならない。
+  if [ "$PRE" = "1" ]; then
+    LOCAL_DG=$(docker image inspect "$img" --format '{{if .RepoDigests}}{{index .RepoDigests 0}}{{end}}' | sed 's/.*@//')
+    REMOTE_DG=$(docker buildx imagetools inspect "$img" --format '{{json .Manifest}}' 2>/dev/null \
+      | python3 -c 'import json,sys; print(json.load(sys.stdin).get("digest",""))' 2>/dev/null)
+    if [ -n "$REMOTE_DG" ] && [ "$LOCAL_DG" != "$REMOTE_DG" ]; then
+      if [ "$ALLOW_BASE_RM" = "1" ]; then
+        log "  ${b} ${img}: 手元のダイジェスト ${LOCAL_DG:-なし} がタグの現在値 ${REMOTE_DG} と違うため、消して取り直します"
+        docker image rm "$img" >> "$LOG" 2>&1 || { log "🔴 $img を消せません（使用中のコンテナがないか確かめてください）"; exit 1; }
+        PRE=0
+      else
+        log "🔴 ${b} ${img}: 手元のダイジェスト ${LOCAL_DG:-なし} がタグの現在値 ${REMOTE_DG} と違います"
+        log "   古い土台のまま測ると、いまタグで引く読者の値になりません。"
+        log "   docker image rm ${img} で消すか、--allow-base-removal を付けて実行してください。"
+        exit 3
+      fi
+    fi
+  fi
   if [ "$PRE" = "0" ]; then
     docker pull -q "$img" >> "$LOG" 2>&1 || { log "🔴 $img を pull できません"; exit 1; }
   fi
@@ -484,7 +505,7 @@ summary = {
     "measures": "同じ Spring Boot アプリを作り方 3 通り × 土台 3 種で作り、圧縮後 / 展開後のサイズ・層の数・pull の転送バイト数・起動時間を測る",
     "size_kinds": {
         "registry_bytes": "ローカルレジストリの manifest が返す層（gzip 済み）と config の合計 = pull で転送されるバイト数",
-        "inspect_bytes": "docker image inspect の .Size。🔴 この環境（containerd image store）では圧縮後にほぼ一致する。旧来の graph driver では展開後を指すが本測定では未検証",
+        "inspect_bytes": "docker image inspect の .Size。🔴 containerd image store では Docker 29.8.0 以降、圧縮後の中身に展開した snapshot の使用量を足した値を返す（moby/moby#53426・29.7.2 までは圧縮後にほぼ一致）。旧来の graph driver では展開後に近い値を指す",
         "expanded_bytes": "docker export した rootfs の tar のバイト数 = 実際に展開される中身",
         "repull_delta_bytes": "v1 を持っている人が v2 を取るときに新たに転送されるバイト数",
         "note_build_s_cached": "build_s_cached はビルドキャッシュが効いた状態の値で、測定対象ではない（ビルド時間は 005 の主題）",

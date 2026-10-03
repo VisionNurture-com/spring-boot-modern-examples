@@ -1,9 +1,9 @@
 ==========================================
 シナリオ: 004-image-size（M2）
-開始: 2026-08-29 14:54:43
+開始: 2026-10-03 20:20:22
 ==========================================
-OS: Darwin 25.6.0 / arm64
-docker: 29.7.2
+OS: Darwin 27.0.0 / arm64
+docker: 29.8.1
 java: openjdk version "25.0.4" 2026-07-21 LTS
 maven: Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
 起動計測の回数: 3
@@ -13,66 +13,71 @@ jar: 21983846 bytes
 jar(v2・アプリの層だけ変更): 21981995 bytes
 
 --- 土台（ベースイメージ）---
+  b1 eclipse-temurin:25-jre: 手元のダイジェスト sha256:d7051a45dd955e4d5d1db4d3f4269fe13d1c6dff8cc6b7ef89fc8577b96c1982 がタグの現在値 sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636 と違うため、消して取り直します
+Untagged: eclipse-temurin:25-jre
+docker.io/library/eclipse-temurin:25-jre
   b1 eclipse-temurin:25-jre
-     digest: eclipse-temurin@sha256:f9e65324a37f28209ce7dd0e5149a7aa954520ed936fb87813cf6ded2400a112
-     inspect: 114740584 bytes / 展開後: 360823296 bytes / 実行前から手元にあったか: あり
+     digest: eclipse-temurin@sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636
+     inspect: 502799229 bytes / 展開後: 361188864 bytes / 実行前から手元にあったか: なし
+docker.io/bellsoft/liberica-openjre-debian:25-cds
   b2 bellsoft/liberica-openjre-debian:25-cds
      digest: bellsoft/liberica-openjre-debian@sha256:20c7cbd6e25c9b9687682b11674769843f845b6435b5ddc7d11440d1b71ea8ed
-     inspect: 127222562 bytes / 展開後: 383901184 bytes / 実行前から手元にあったか: あり
+     inspect: 527745056 bytes / 展開後: 383901184 bytes / 実行前から手元にあったか: なし
+docker.io/library/eclipse-temurin:25-jre-alpine
   b3 eclipse-temurin:25-jre-alpine
-     digest: eclipse-temurin@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
-     inspect: 74742439 bytes / 展開後: 225714176 bytes / 実行前から手元にあったか: あり
+     digest: eclipse-temurin@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
+     inspect: 303436115 bytes / 展開後: 225732608 bytes / 実行前から手元にあったか: なし
 
 --- ローカルレジストリ（registry:3・:5001）---
-0e630053d42f8a6591bdaf44eaa6d9a4dc854bcde89bc2520f0e5bb64ec6670b
+305077bc316612fe66791b28268d6f792bd71a6e13d822919dccc25225220975
   起動しました: registry@sha256:1be55279f18a2fe1a74edf2664cac61c1bea305b7b4642dab412e7affdcb3e33
 
---- イメージを作る（包み方 3 × 土台 3）---
+--- イメージを作る（作り方 3 × 土台 3）---
 
 [w1-b1] 素の jar をそのまま入れる / eclipse-temurin:25-jre
-sha256:a5b8d5130e6a218d2462cfaff0fb1fcbffb88cdbe0df5317976bcac2d4c883f7
+sha256:99ffa2de4b67e698f70eb6d0b66793db2a95948fc012d591e47272066b50d5ad
 localhost:5001/measure/w1-b1:v1
-  ビルド 0.4s（キャッシュ込み・測定対象ではない） / registry 134556430 bytes / inspect 134559099 bytes / 展開後 382808576 bytes / 層 8
+  ビルド 0.4s（キャッシュ込み・測定対象ではない） / registry 138072109 bytes / inspect 544626498 bytes / 展開後 383174144 bytes / 層 8
 
 [w1-b2] 素の jar をそのまま入れる / bellsoft/liberica-openjre-debian:25-cds
-sha256:b147c43dc74f3db69f2d59ec35fd309828e8a64e700648b26bd6462cf7c7e9b7
+sha256:1e43ed54aff927c9a6370998e2968e8c4f252e998bd6d4c8f84f00dd7210bfb6
 localhost:5001/measure/w1-b2:v1
-  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 147043585 bytes / inspect 147045690 bytes / 展開後 405886464 bytes / 層 5
+  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 147043569 bytes / inspect 569571794 bytes / 展開後 405886464 bytes / 層 5
 
 [w1-b3] 素の jar をそのまま入れる / eclipse-temurin:25-jre-alpine
-sha256:b0a8250b2bc471b47628dfe901a7aa4fd018161025e1d2166bf4557342073f0d
+sha256:9935f941a7ed207289d016db577cfc3a6d356fe40f8eef854d5db7407baa8fe4
 localhost:5001/measure/w1-b3:v1
-  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 94561682 bytes / inspect 94564162 bytes / 展開後 247699456 bytes / 層 7
+  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 94574257 bytes / inspect 345263369 bytes / 展開後 247717888 bytes / 層 7
 
 [w2-b1] レイヤ抽出（公式の手順） / eclipse-temurin:25-jre
-sha256:2bb86f0ed0b95c8ff40020bd2efc923be532a26fcfc46b5cac95390906f09740
+sha256:f6b19442e56f873c1662edd219ab0c07eb2259c2cd7944a306b11321495c8853
 localhost:5001/measure/w2-b1:v1
-  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 134377453 bytes / inspect 134380686 bytes / 展開後 382632960 bytes / 層 11
+  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 137893152 bytes / inspect 544353897 bytes / 展開後 382998528 bytes / 層 11
 
 [w2-b2] レイヤ抽出（公式の手順） / bellsoft/liberica-openjre-debian:25-cds
-sha256:67a31aaf7b6783ef33e6b1081fe06be9d20a33f5345fb20ae6fa2b753b3d2672
+sha256:b480f18cd3404a7ffbcccdcd639fd501951c0d4815d1e41e09521ac2880cbc3f
 localhost:5001/measure/w2-b2:v1
-  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 146864608 bytes / inspect 146867276 bytes / 展開後 405710848 bytes / 層 8
+  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 146864607 bytes / inspect 569299187 bytes / 展開後 405710848 bytes / 層 8
 
 [w2-b3] レイヤ抽出（公式の手順） / eclipse-temurin:25-jre-alpine
-sha256:8ab8e5d951ac1a3427d7c4c053dfa39d93cd0bc884e94582b715f9bd018a1ff4
+sha256:f041a53fc5303bd1faa0403f7548417eeb6321866b89143e2fbb37af41a389f5
 localhost:5001/measure/w2-b3:v1
-  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 94382720 bytes / inspect 94385763 bytes / 展開後 247523840 bytes / 層 10
+  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 94395294 bytes / inspect 344990761 bytes / 展開後 247542272 bytes / 層 10
 
 [w3-b1] レイヤ抽出 + AOT キャッシュ / eclipse-temurin:25-jre
-sha256:fb477cd75270b0078c701aec0f4140da2310eb90c5c2370aab4cf9f82a4f3fbd
+sha256:50144cf8bf66499f1bebcb5771e7775b3b7140ca079a6ba03cf5454c4515e588
 localhost:5001/measure/w3-b1:v1
-  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 148469490 bytes / inspect 148472916 bytes / 展開後 439882752 bytes / 層 12
+  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 151993329 bytes / inspect 615740923 bytes / 展開後 440248320 bytes / 層 12
 
 [w3-b2] レイヤ抽出 + AOT キャッシュ / bellsoft/liberica-openjre-debian:25-cds
-sha256:b3aefc5a01ffe4001980fdfc284d3b78c12d89f278b77589a1f30f9d3c39c49c
+sha256:48061dec0a00d4f858048609cfdf012fe7f4647c6e5b56b92b7b803fc7025d54
 localhost:5001/measure/w3-b2:v1
-  ビルド 0.2s（キャッシュ込み・測定対象ではない） / registry 160968497 bytes / inspect 160971358 bytes / 展開後 462961152 bytes / 層 9
+  ビルド 0.4s（キャッシュ込み・測定対象ではない） / registry 160965689 bytes / inspect 640621582 bytes / 展開後 462895616 bytes / 層 9
 
 [w3-b3] レイヤ抽出 + AOT キャッシュ / eclipse-temurin:25-jre-alpine
-sha256:b6c8a04d10124f8135d0e753998f5a7ca18568cb50d9aae8aeb296deea7ab2ba
+sha256:45d7e57b88b83ed44be127b08a5270a5263d6393d20d6f6a7a704da57f4002c8
 localhost:5001/measure/w3-b3:v1
-  ビルド 0.3s（キャッシュ込み・測定対象ではない） / registry 108477138 bytes / inspect 108480374 bytes / 展開後 304773632 bytes / 層 11
+  ビルド 0.4s（キャッシュ込み・測定対象ではない） / registry 108467804 bytes / inspect 416219048 bytes / 展開後 304660992 bytes / 層 11
 
 --- 起動を測る（docker run のオーバーヘッド込み・3 回の中央値）---
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
@@ -86,13 +91,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:26.466Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:26.467Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:26.837Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:26.843Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:26.843Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:26.852Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 364 ms
-2026-08-29T05:55:27.043Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:17.411Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:17.412Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:17.759Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:17.764Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:17.764Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:17.772Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 339 ms
+2026-10-03T11:21:17.940Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -104,13 +109,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:27.564Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:27.565Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:27.933Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:27.938Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:27.938Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:27.948Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 362 ms
-2026-08-29T05:55:28.143Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:18.444Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:18.445Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:18.784Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:18.789Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:18.789Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:18.797Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 332 ms
+2026-10-03T11:21:18.973Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -122,13 +127,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:28.655Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:28.656Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:29.031Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:29.036Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:29.036Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:29.045Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 368 ms
-2026-08-29T05:55:29.238Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:19.471Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:19.473Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:19.814Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:19.819Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:19.819Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:19.827Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 336 ms
+2026-10-03T11:21:20.005Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -140,13 +145,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:29.758Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:29.759Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:30.135Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:30.141Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:30.141Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:30.150Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 369 ms
-2026-08-29T05:55:30.343Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:20.503Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:20.505Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:20.855Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:20.860Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:20.860Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:20.868Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 343 ms
+2026-10-03T11:21:21.034Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -158,13 +163,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:30.886Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:30.888Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:31.264Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:31.269Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:31.270Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:31.278Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 368 ms
-2026-08-29T05:55:31.470Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:21.519Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:21.520Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:21.858Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:21.863Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:21.863Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:21.872Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 334 ms
+2026-10-03T11:21:22.042Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -176,13 +181,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:31.974Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:31.975Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:32.345Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:32.351Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:32.351Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:32.360Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 366 ms
-2026-08-29T05:55:32.550Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:22.557Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:22.558Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:22.894Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:22.899Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:22.899Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:22.907Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 331 ms
+2026-10-03T11:21:23.072Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -194,13 +199,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:33.068Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:33.070Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:33.432Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:33.437Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:33.437Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:33.446Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 357 ms
-2026-08-29T05:55:33.640Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:23.588Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:23.590Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:23.924Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:23.929Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:23.929Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:23.938Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 330 ms
+2026-10-03T11:21:24.101Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -212,13 +217,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:34.149Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:34.150Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:34.509Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:34.514Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:34.514Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:34.523Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 353 ms
-2026-08-29T05:55:34.714Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:24.616Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:24.617Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:24.946Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:24.951Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:24.951Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:24.958Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 323 ms
+2026-10-03T11:21:25.125Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -230,13 +235,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:35.298Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:35.299Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:35.712Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:35.718Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:35.719Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:35.730Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 406 ms
-2026-08-29T05:55:35.945Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:25.660Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:25.662Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:26.030Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:26.036Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:26.036Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:26.045Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 362 ms
+2026-10-03T11:21:26.234Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -248,13 +253,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:36.515Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:36.516Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:36.938Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:36.945Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:36.945Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:36.956Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 416 ms
-2026-08-29T05:55:37.198Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:26.758Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:26.760Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:27.120Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:27.126Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:27.126Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:27.135Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 355 ms
+2026-10-03T11:21:27.321Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -266,13 +271,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:37.737Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:37.738Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:38.159Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:38.165Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:38.165Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:38.175Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 413 ms
-2026-08-29T05:55:38.393Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:27.843Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:27.844Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:28.205Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:28.211Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:28.211Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:28.220Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 355 ms
+2026-10-03T11:21:28.405Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -284,13 +289,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:38.932Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:38.934Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:39.350Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:39.355Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:39.356Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:39.365Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 406 ms
-2026-08-29T05:55:39.582Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:28.918Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:28.919Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:29.281Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:29.288Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:29.288Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:29.299Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 359 ms
+2026-10-03T11:21:29.494Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -302,13 +307,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:40.031Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:40.032Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:40.380Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:40.385Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:40.385Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:40.396Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 340 ms
-2026-08-29T05:55:40.583Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:29.968Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:29.969Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:30.288Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:30.293Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:30.293Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:30.304Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 312 ms
+2026-10-03T11:21:30.463Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -320,13 +325,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:41.034Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:41.036Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:41.386Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:41.391Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:41.391Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:41.403Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 345 ms
-2026-08-29T05:55:41.585Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:30.871Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:30.872Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:31.179Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:31.184Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:31.184Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:31.194Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 302 ms
+2026-10-03T11:21:31.352Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -338,13 +343,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:42.020Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:42.022Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:42.362Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:42.367Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:42.367Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:42.379Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 333 ms
-2026-08-29T05:55:42.562Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:31.803Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:31.804Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:32.129Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:32.134Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:32.134Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:32.143Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 317 ms
+2026-10-03T11:21:32.307Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -356,13 +361,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:43.024Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:43.025Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:43.362Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:43.367Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:43.368Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:43.380Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 332 ms
-2026-08-29T05:55:43.573Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:32.719Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:32.720Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:33.024Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:33.029Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:33.029Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:33.039Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 298 ms
+2026-10-03T11:21:33.196Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -374,13 +379,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:44.001Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:44.002Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:44.336Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:44.342Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:44.342Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:44.353Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 329 ms
-2026-08-29T05:55:44.536Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:33.586Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:33.587Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:33.896Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:33.901Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:33.901Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:33.911Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 303 ms
+2026-10-03T11:21:34.070Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -392,13 +397,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:44.986Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:44.987Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:45.323Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:45.328Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:45.328Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:45.340Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 332 ms
-2026-08-29T05:55:45.521Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:34.516Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:34.518Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:34.822Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:34.827Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:34.827Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:34.837Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 299 ms
+2026-10-03T11:21:35.002Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -410,13 +415,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:45.974Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:45.976Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:46.311Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:46.317Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:46.317Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:46.329Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 331 ms
-2026-08-29T05:55:46.513Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:35.456Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:35.457Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:35.759Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:35.764Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:35.764Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:35.774Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 297 ms
+2026-10-03T11:21:35.932Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -428,13 +433,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:46.987Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:46.988Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:47.331Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:47.336Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:47.336Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:47.347Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 337 ms
-2026-08-29T05:55:47.529Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:36.384Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:36.385Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:36.684Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:36.689Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:36.689Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:36.699Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 294 ms
+2026-10-03T11:21:36.856Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -446,13 +451,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:47.974Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:47.976Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:48.367Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:48.372Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:48.372Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:48.384Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 385 ms
-2026-08-29T05:55:48.590Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:37.321Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:37.323Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:37.653Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:37.658Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:37.658Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:37.668Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 323 ms
+2026-10-03T11:21:37.839Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -464,13 +469,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:49.090Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:49.092Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:49.480Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:49.485Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:49.486Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:49.497Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 384 ms
-2026-08-29T05:55:49.708Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:38.307Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:38.309Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:38.633Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:38.639Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:38.639Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:38.649Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 319 ms
+2026-10-03T11:21:38.813Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -482,13 +487,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:50.215Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:50.216Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:50.606Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:50.611Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:50.612Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:50.624Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 385 ms
-2026-08-29T05:55:50.828Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:39.272Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:39.273Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:39.607Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:39.612Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:39.613Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:39.623Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 328 ms
+2026-10-03T11:21:39.793Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -500,13 +505,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:51.333Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:51.334Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:51.739Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:51.746Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:51.746Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:51.761Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 402 ms
-2026-08-29T05:55:51.974Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:40.262Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:40.263Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:40.602Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:40.607Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:40.607Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:40.617Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 331 ms
+2026-10-03T11:21:40.787Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -518,13 +523,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:52.290Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:52.290Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:52.473Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:52.475Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:52.476Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:52.479Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 176 ms
-2026-08-29T05:55:52.554Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:41.107Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:41.107Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:41.287Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:41.289Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:41.289Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:41.292Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 172 ms
+2026-10-03T11:21:41.361Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -536,13 +541,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:52.895Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:52.896Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:53.077Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:53.079Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:53.079Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:53.082Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 174 ms
-2026-08-29T05:55:53.158Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:41.671Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:41.672Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:41.847Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:41.849Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:41.849Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:41.852Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 168 ms
+2026-10-03T11:21:41.920Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -554,13 +559,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:53.488Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:53.488Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:53.672Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:53.675Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:53.675Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:53.679Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 176 ms
-2026-08-29T05:55:53.754Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:42.208Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:42.209Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:42.384Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:42.386Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:42.386Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:42.389Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 167 ms
+2026-10-03T11:21:42.456Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -572,13 +577,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:54.101Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:54.101Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:54.310Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:54.312Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:54.312Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:54.316Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 199 ms
-2026-08-29T05:55:54.391Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:42.773Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:42.774Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:42.949Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:42.951Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:42.951Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:42.954Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 168 ms
+2026-10-03T11:21:43.022Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -590,13 +595,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:54.715Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:54.715Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:54.891Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:54.893Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:54.893Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:54.896Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 168 ms
-2026-08-29T05:55:54.967Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:43.320Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:43.320Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:43.488Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:43.490Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:43.490Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:43.493Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 160 ms
+2026-10-03T11:21:43.560Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -608,13 +613,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:55.292Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:55.293Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:55.470Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:55.473Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:55.473Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:55.476Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 169 ms
-2026-08-29T05:55:55.548Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:43.892Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:43.893Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:44.062Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:44.064Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:44.064Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:44.067Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 162 ms
+2026-10-03T11:21:44.135Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -626,13 +631,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:55.873Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:55.873Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:56.049Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:56.051Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:56.051Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:56.054Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 169 ms
-2026-08-29T05:55:56.125Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:44.432Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:44.432Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:44.601Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:44.603Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:44.604Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:44.606Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 162 ms
+2026-10-03T11:21:44.674Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -644,13 +649,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:56.462Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:56.462Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:56.644Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:56.646Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:56.647Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:56.649Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 174 ms
-2026-08-29T05:55:56.720Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:44.976Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:44.977Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:45.143Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:45.145Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:45.145Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:45.148Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 159 ms
+2026-10-03T11:21:45.213Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -662,13 +667,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:57.066Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:57.067Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:57.271Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:57.273Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:57.273Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:57.276Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 194 ms
-2026-08-29T05:55:57.360Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:45.552Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:45.552Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:45.770Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:45.772Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:45.773Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:45.776Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 208 ms
+2026-10-03T11:21:45.870Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -680,13 +685,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:57.707Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:57.707Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:57.911Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:57.913Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:57.913Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:57.916Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 195 ms
-2026-08-29T05:55:57.999Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:46.196Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:46.196Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:46.376Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:46.378Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:46.378Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:46.381Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 171 ms
+2026-10-03T11:21:46.453Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -698,13 +703,13 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:58.341Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:58.341Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:58.543Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:58.546Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:58.546Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:58.549Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 194 ms
-2026-08-29T05:55:58.633Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-10-03T11:21:46.745Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:46.745Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:46.928Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:46.930Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:46.930Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:46.933Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 175 ms
+2026-10-03T11:21:47.005Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
 Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
   .   ____          _            __ _ _
@@ -716,45 +721,45 @@ Picked up JAVA_TOOL_OPTIONS: -Dspring.context.exit=onRefresh
 
  :: Spring Boot ::                (v4.1.1)
 
-2026-08-29T05:55:58.984Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4 with PID 1 (/application/application.jar started by root in /application)
-2026-08-29T05:55:58.984Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
-2026-08-29T05:55:59.187Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
-2026-08-29T05:55:59.190Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-08-29T05:55:59.190Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
-2026-08-29T05:55:59.193Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 194 ms
-2026-08-29T05:55:59.277Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-  [w1-b1] 中央値 1.1s（1.099 1.100 1.129）
-  [w1-b2] 中央値 1.1s（1.100 1.086 1.100）
-  [w1-b3] 中央値 1.201s（1.223 1.201 1.198）
-  [w2-b1] 中央値 0.992s（0.996 0.992 0.986）
-  [w2-b2] 中央値 0.987s（0.987 1.000 0.979）
-  [w2-b3] 中央値 1.113s（1.113 1.130 1.100）
-  [w3-b1] 中央値 0.604s（0.604 0.588 0.652）
-  [w3-b2] 中央値 0.586s（0.579 0.586 0.597）
-  [w3-b3] 中央値 0.643s（0.637 0.643 0.646）
+2026-10-03T11:21:47.353Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : Starting MeasureApplication v0.1.0 using Java 25.0.4.1 with PID 1 (/application/application.jar started by root in /application)
+2026-10-03T11:21:47.353Z  INFO 1 --- [           main] com.example.measure.MeasureApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-10-03T11:21:47.532Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-10-03T11:21:47.534Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-03T11:21:47.534Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-03T11:21:47.537Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 170 ms
+2026-10-03T11:21:47.609Z  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+  [w1-b1] 中央値 1.029s（1.036 1.021 1.029）
+  [w1-b2] 中央値 1.03s（1.036 1.030 1.022）
+  [w1-b3] 中央値 1.087s（1.087 1.071 1.132）
+  [w2-b1] 中央値 0.918s（0.927 0.918 0.876）
+  [w2-b2] 中央値 0.929s（0.938 0.929 0.921）
+  [w2-b3] 中央値 0.982s（0.966 0.982 0.984）
+  [w3-b1] 中央値 0.553s（0.547 0.553 0.556）
+  [w3-b2] 中央値 0.552s（0.553 0.543 0.552）
+  [w3-b3] 中央値 0.559s（0.554 0.602 0.559）
 
 --- アプリの層だけ変えて押し直す（土台は b1 固定）---
-sha256:d74dde8da0a7150651abda51d00a912060b165ec0bb127f3c4e46b8fb482ff3c
+sha256:6293a44ec9b6b6d79460fb2a27e1364b92291951d041bf62ef0cff74c5e5729b
 localhost:5001/measure/w1-b1:v2
-  [w1] v1 を持っている人が v2 を取るとき: 19823039 bytes（v2 の全体は 134546658 bytes）
-sha256:4f121928291e8f05262bd28da84adb94a47a260e79b0228d8fe92248c9dcf9b2
+  [w1] v1 を持っている人が v2 を取るとき: 19823037 bytes（v2 の全体は 138062326 bytes）
+sha256:45582773db69aa95112c468cd4616c5f4eb35bea9238c18d2897ba43b1373b95
 localhost:5001/measure/w2-b1:v2
-  [w2] v1 を持っている人が v2 を取るとき: 2933 bytes（v2 の全体は 134367234 bytes）
-sha256:fd6533c109ed80e8658f5e3da39e2f77086c6f8c221739eecc0bff6c5c051f06
+  [w2] v1 を持っている人が v2 を取るとき: 2932 bytes（v2 の全体は 137882907 bytes）
+sha256:11fd9fbc0fe18ce9a181f3e8cfff6157c2158e9f3f78aa1f917ec69c9250777e
 localhost:5001/measure/w3-b1:v2
-  [w3] v1 を持っている人が v2 を取るとき: 14109883 bytes（v2 の全体は 148474184 bytes）
+  [w3] v1 を持っている人が v2 を取るとき: 14074155 bytes（v2 の全体は 151954130 bytes）
 
 --- 何も持っていない状態から pull する（対照つき）---
 🔴 消すのは本スクリプトが導入したイメージだけです。実行前から手元にあった土台には触れません。
 localhost:5001/measure/w2-b1:v1
-  [b1] 2.324s（localhost 経由・**この秒数を主張の根拠にしない**）
+  [b1] 1.331s（localhost 経由・**この秒数を主張の根拠にしない**）
 localhost:5001/measure/w2-b2:v1
-  [b2] 2.325s（localhost 経由・**この秒数を主張の根拠にしない**）
+  [b2] 1.321s（localhost 経由・**この秒数を主張の根拠にしない**）
 localhost:5001/measure/w2-b3:v1
-  [b3] 2.32s（localhost 経由・**この秒数を主張の根拠にしない**）
+  [b3] 1.339s（localhost 経由・**この秒数を主張の根拠にしない**）
 
 --- まとめ ---
 
-生ログ: /Users/user/work/repo/spring-boot-modern-examples/results/004-image-size/run.log
-実効値: /Users/user/work/repo/spring-boot-modern-examples/results/004-image-size/summary.json
-終了: 2026-08-29 14:56:15
+生ログ: results/004-image-size/run.log
+実効値: results/004-image-size/summary.json
+終了: 2026-10-03 20:22:00
